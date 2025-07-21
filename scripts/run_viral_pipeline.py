@@ -112,7 +112,7 @@ Examples:
         # Generate depth file if BAM provided
         if bam_file:
             depth_cmd = f"""/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
-                samtools depth {bam_file} > {output_dir}/{args.output}_depth.txt"""
+                echo -e "#CHROM\tPOS\tDEPTH" > {output_dir}/{args.output}_depth.txt && samtools depth {bam_file} >> {output_dir}/{args.output}_depth.txt"""
             run_command(depth_cmd, "Generating depth file")
         
         # Parse VCF with quality filtering
