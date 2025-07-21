@@ -144,13 +144,7 @@ def extract_depth_from_bam(bam_file, output_file=None):
 def read_depth_file(depth_file):
     """Read depth file created by samtools depth"""
     print(f"📖 Reading depth file: {depth_file}")
-    # Read depth file - handle both with and without headers
-    first_line = open(depth_file).readline().strip()
-    if first_line.startswith(#):
-        df = pd.read_csv(depth_file, sep=	, header=0, comment=#)
-        df.columns = [chrom, position, depth]  # Standardize column names
-    else:
-        df = pd.read_csv(depth_file, sep=	, header=None, names=[chrom, position, depth])
+    df = pd.read_csv(depth_file, sep='\t', header=0)
     print(f"   Found {len(df)} positions")
     return df
 

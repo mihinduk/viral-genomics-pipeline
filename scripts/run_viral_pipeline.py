@@ -11,6 +11,10 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+# Configuration - can be overridden with environment variables
+SHOTGUN_PIPELINE_PATH = os.environ.get("SHOTGUN_PIPELINE_PATH", "{SHOTGUN_PIPELINE_PATH}")
+MAMBA_PATH = os.environ.get("MAMBA_PATH", "{MAMBA_PATH}")
+
 
 def run_command(cmd, description=""):
     """Run shell command with error handling"""
@@ -90,7 +94,7 @@ Examples:
             print("❌ Error: --r1 and --r2 required for analysis")
             sys.exit(1)
             
-        analysis_cmd = f"""/scratch/sahlab/kathie/Diamond_test/shotgun_viral_genomics/run_pipeline_htcf_consolidated.sh \\
+        analysis_cmd = f"""{SHOTGUN_PIPELINE_PATH} \\
             "{args.r1}" \\
             "{args.r2}" \\
             {args.accession} \\
@@ -111,12 +115,12 @@ Examples:
     if not args.analysis_only:
         # Generate depth file if BAM provided
         if bam_file:
-            depth_cmd = f"""/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
-                echo -e "#CHROM\tPOS\tDEPTH" > {output_dir}/{args.output}_depth.txt && samtools depth {bam_file} >> {output_dir}/{args.output}_depth.txt"""
+            depth_cmd = f"""{MAMBA_PATH} run -n viral_genomics \\
+                echo -e "chrom\tposition\tdepth" > {output_dir}/{args.output}_depth.txt && samtools depth {bam_file} >> {output_dir}/{args.output}_depth.txt"""
             run_command(depth_cmd, "Generating depth file")
         
         # Parse VCF with quality filtering
-        parse_cmd = f"""/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
+        parse_cmd = f"""{MAMBA_PATH} run -n viral_genomics \\
             python3 {pipeline_dir}/viral_pipeline/visualization/parse_snpeff_vcf.py \\
             -i {vcf_file} \\
             -d 200 \\
@@ -126,7 +130,7 @@ Examples:
         run_command(parse_cmd, "Parsing and filtering VCF")
         
         # Create mutation visualization
-        mutation_cmd = f"""/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
+        mutation_cmd = f"""{MAMBA_PATH} run -n viral_genomics \\
             python3 {pipeline_dir}/viral_pipeline/visualization/visualize_mutations_python_outdir.py \\
             --input {output_dir}/{args.output}_filtered_mutations.tsv \\
             --output {args.output}_mutations.png \\
@@ -138,7 +142,7 @@ Examples:
         # Create depth visualization if depth file exists
         depth_file = f"{output_dir}/{args.output}_depth.txt"
         if os.path.exists(depth_file):
-            depth_cmd = f"""/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
+            depth_cmd = f"""{MAMBA_PATH} run -n viral_genomics \\
                 python3 {pipeline_dir}/viral_pipeline/visualization/visualize_depth.py \\
                 --depth {depth_file} \\
                 --output {output_dir}/{args.output}_depth.png \\
