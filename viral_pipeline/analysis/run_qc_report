@@ -1,0 +1,7 @@
+#!/bin/bash
+# Wrapper script for QC visualization report generation
+# Usage: run_qc_report diagnostic_SMS_10 diagnostic_SMS_11 -o combined_report
+
+# Find the directory where this script is located (works for any installation)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+python "${SCRIPT_DIR}/qc_with_simple_plots.py" "$@"
