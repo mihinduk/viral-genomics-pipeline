@@ -58,6 +58,27 @@ except ImportError:
 
 # Suppress matplotlib warnings
 warnings.filterwarnings('ignore', category=UserWarning)
+
+def constrain_figure_size(width, height, max_pixels=30000):
+    """Constrain figure size to prevent matplotlib errors"""
+    # Maximum pixels per dimension (well below 2^16 = 65536)
+    max_width = max_pixels
+    max_height = max_pixels
+    
+    # Constrain dimensions
+    if width > max_width:
+        print(f"⚠️  Constraining width from {width} to {max_width}")
+        width = max_width
+    if height > max_height:
+        print(f"⚠️  Constraining height from {height} to {max_height}")
+        height = max_height
+    
+    # Ensure reasonable minimums
+    width = max(4, min(width, max_width))
+    height = max(3, min(height, max_height))
+    
+    return width, height
+
 # Load known virus configurations
 import json
 try:
@@ -157,7 +178,10 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         title = f"Read Depth Coverage - {accession} ({virus_name})"
     
     # Create figure with subplots
-    fig = plt.figure(figsize=figsize)
+    # Apply size constraints to prevent matplotlib errors
+    constrained_width, constrained_height = constrain_figure_size(figsize[0], figsize[1])
+    print(f"📐 Figure size: {constrained_width}x{constrained_height}")
+    fig = plt.figure(figsize=(constrained_width, constrained_height))
     
     # Main depth plot (top 70%)
     ax_depth = plt.subplot2grid((10, 1), (0, 0), rowspan=7)
@@ -276,7 +300,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Save if output file specified
     if output_file:
-        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.savefig(output_file, dpi=150, bbox_inches='tight')
         print(f"✅ Depth plot saved to: {output_file}")
     
     return fig, (ax_depth, ax_genes), stats
