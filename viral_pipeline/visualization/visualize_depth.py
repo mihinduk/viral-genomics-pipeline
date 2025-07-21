@@ -144,7 +144,7 @@ def extract_depth_from_bam(bam_file, output_file=None):
 def read_depth_file(depth_file):
     """Read depth file created by samtools depth"""
     print(f"📖 Reading depth file: {depth_file}")
-    df = pd.read_csv(depth_file, sep='\t', header=0, dtype={"depth": int}, comment="#"
+    df = pd.read_csv(depth_file, sep='\t', header=0, dtype={'depth': int}, comment='#')
     print(f"   Found {len(df)} positions")
     return df
 
