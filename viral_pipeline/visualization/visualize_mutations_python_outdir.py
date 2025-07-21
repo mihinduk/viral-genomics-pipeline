@@ -316,12 +316,10 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     ax.legend(handles=legend_elements, loc='upper right', frameon=True, 
               fancybox=True, shadow=True, fontsize=10)
     
-    # Format x-axis - move up to create more space for mutation tables
+    # Format x-axis
     ax.set_xlabel('Genome Position', fontsize=12, fontweight='bold')
     ax.set_xticks(np.arange(0, GENOME_LENGTH+1, 1000))
     ax.set_xticklabels([f'{x:,}' for x in np.arange(0, GENOME_LENGTH+1, 1000)])
-    # Move x-axis labels up
-    ax.xaxis.set_label_coords(0.5, -0.08)
     
     # Remove y-axis
     ax.set_yticks([])
@@ -350,7 +348,7 @@ def filter_genes_for_display(mutations_df, gene_filter):
         mutations_df['Gene'] = mutations_df['POS'].apply(lambda pos: map_position_to_gene(pos, accession))
         return mutations_df[mutations_df['Gene'].isin(selected_genes)]
 
-def create_mutation_tables(fig, mutations_df, start_row=0.3, gene_filter="all", accession=None):
+def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", accession=None):
     """Create tables showing ALL mutations for each gene with complete parity"""
     
     # Show ALL mutations (synonymous + non-synonymous) for complete parity with lines
