@@ -10,6 +10,7 @@ def main():
     parser.add_argument('output_file', help='Output filtered TSV file')
     parser.add_argument('-q', '--quality', type=float, default=1000, help='Quality score cutoff (default: 1000)')
     parser.add_argument('-d', '--depth', type=int, default=200, help='Minimum depth cutoff (default: 200)')
+    parser.add_argument('-f', '--freq', type=float, default=0.01, help='Minimum allele frequency cutoff (default: 0.01)')
     
     args = parser.parse_args()
     
@@ -17,10 +18,12 @@ def main():
     output_file = args.output_file
     quality_cutoff = args.quality
     depth_cutoff = args.depth
+    freq_cutoff = args.freq
 
     print(f"Processing SnpEff TSV file: {input_file}")
     print(f"Quality cutoff: {quality_cutoff}")
     print(f"Depth cutoff: {depth_cutoff}")
+    print(f"Allele frequency cutoff: {freq_cutoff}")
 
     # Read the SnpEff TSV file - handle the #CHROM header line
     with open(input_file, 'r') as f:
@@ -73,15 +76,16 @@ def main():
     df['DP4'] = df['INFO'].apply(extract_dp4) 
     df['strand_bias'] = df['INFO'].apply(extract_sb)
 
-    print("Applying quality filtering...")
+    print("Applying quality, depth, and frequency filtering...")
     
-    # Apply quality and depth filtering
+    # Apply quality, depth, and frequency filtering
     filtered_df = df[
         (df['QUAL'] >= quality_cutoff) & 
-        (df['Total_Depth'] >= depth_cutoff)
+        (df['Total_Depth'] >= depth_cutoff) &
+        (df['Allele_Frequency'] >= freq_cutoff)
     ].copy()
     
-    print(f"After filtering (QUAL >= {quality_cutoff}, depth >= {depth_cutoff}): {len(filtered_df)} variants")
+    print(f"After filtering (QUAL >= {quality_cutoff}, depth >= {depth_cutoff}, freq >= {freq_cutoff}): {len(filtered_df)} variants")
 
     if len(filtered_df) == 0:
         print("⚠️  Warning: No variants passed filtering. Consider lowering cutoffs.")
