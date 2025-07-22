@@ -1,16 +1,22 @@
 {
-  "NC_009942.1": {
-    "name": "West Nile virus",
+  "AY532665.1": {
+    "colors": {
+      "C": "#4575b4",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf",
+      "prM": "#74add1"
+    },
     "family": "flavivirus",
-    "genome_length": 11029,
     "gene_coords": {
       "C": [
         97,
         465
-      ],
-      "prM": [
-        466,
-        966
       ],
       "Env": [
         967,
@@ -38,30 +44,19 @@
       ],
       "NS4b": [
         6916,
-        7671
+        7680
       ],
       "NS5": [
-        7672,
+        7681,
         10395
+      ],
+      "prM": [
+        466,
+        966
       ]
     },
-    "colors": {
-      "C": "#4575b4",
-      "prM": "#74add1",
-      "Env": "#abd9e9",
-      "NS1": "#fdae61",
-      "NS2a": "#f46d43",
-      "NS2b": "#d73027",
-      "NS3": "#a50026",
-      "NS4a": "#762a83",
-      "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
-    },
-    "structural_genes": [
-      "C",
-      "prM",
-      "Env"
-    ],
+    "genome_length": 11029,
+    "name": "West Nile virus strain NY99",
     "nonstructural_genes": [
       "NS1",
       "NS2a",
@@ -70,20 +65,31 @@
       "NS4a",
       "NS4b",
       "NS5"
+    ],
+    "structural_genes": [
+      "C",
+      "prM",
+      "Env"
     ]
   },
   "HM440560.1": {
-    "name": "Powassan virus",
+    "colors": {
+      "C": "#4575b4",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf",
+      "prM": "#74add1"
+    },
     "family": "flavivirus",
-    "genome_length": 10839,
     "gene_coords": {
       "C": [
         110,
         357
-      ],
-      "prM": [
-        358,
-        858
       ],
       "Env": [
         859,
@@ -116,25 +122,14 @@
       "NS5": [
         7564,
         10287
+      ],
+      "prM": [
+        358,
+        858
       ]
     },
-    "colors": {
-      "C": "#4575b4",
-      "prM": "#74add1",
-      "Env": "#abd9e9",
-      "NS1": "#fdae61",
-      "NS2a": "#f46d43",
-      "NS2b": "#d73027",
-      "NS3": "#a50026",
-      "NS4a": "#762a83",
-      "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
-    },
-    "structural_genes": [
-      "C",
-      "prM",
-      "Env"
-    ],
+    "genome_length": 10839,
+    "name": "Powassan virus",
     "nonstructural_genes": [
       "NS1",
       "NS2a",
@@ -143,20 +138,40 @@
       "NS4a",
       "NS4b",
       "NS5"
+    ],
+    "structural_genes": [
+      "C",
+      "prM",
+      "Env"
     ]
   },
-  "NC_001477.1": {
-    "name": "Dengue virus type 1",
+  "KU955591.1": {
+    "colors": {},
     "family": "flavivirus",
-    "genome_length": 10723,
+    "gene_coords": {},
+    "genome_length": 10806,
+    "name": "Zika virus isolate Zika virus/A.africanus-tc/SEN/1984/41525-DAK, complete genome",
+    "nonstructural_genes": [],
+    "structural_genes": []
+  },
+  "NC_001477.1": {
+    "colors": {
+      "C": "#4575b4",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf",
+      "prM": "#74add1"
+    },
+    "family": "flavivirus",
     "gene_coords": {
       "C": [
         95,
         436
-      ],
-      "prM": [
-        437,
-        937
       ],
       "Env": [
         938,
@@ -189,25 +204,14 @@
       "NS5": [
         7643,
         10366
+      ],
+      "prM": [
+        437,
+        937
       ]
     },
-    "colors": {
-      "C": "#4575b4",
-      "prM": "#74add1",
-      "Env": "#abd9e9",
-      "NS1": "#fdae61",
-      "NS2a": "#f46d43",
-      "NS2b": "#d73027",
-      "NS3": "#a50026",
-      "NS4a": "#762a83",
-      "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
-    },
-    "structural_genes": [
-      "C",
-      "prM",
-      "Env"
-    ],
+    "genome_length": 10723,
+    "name": "Dengue virus type 1",
     "nonstructural_genes": [
       "NS1",
       "NS2a",
@@ -216,27 +220,16 @@
       "NS4a",
       "NS4b",
       "NS5"
+    ],
+    "structural_genes": [
+      "C",
+      "prM",
+      "Env"
     ]
   },
-  "AY532665.1": {
-    "name": "West Nile virus strain NY99",
-    "family": "flavivirus",
-    "genome_length": 11029,
-    "gene_coords": {
-      "C": [97, 465],
-      "prM": [466, 966],
-      "Env": [967, 2469],
-      "NS1": [2470, 3525],
-      "NS2a": [3526, 4218],
-      "NS2b": [4219, 4611],
-      "NS3": [4612, 6468],
-      "NS4a": [6469, 6915],
-      "NS4b": [6916, 7680],
-      "NS5": [7681, 10395]
-    },
+  "NC_009942.1": {
     "colors": {
       "C": "#4575b4",
-      "prM": "#74add1",
       "Env": "#abd9e9",
       "NS1": "#fdae61",
       "NS2a": "#f46d43",
@@ -244,16 +237,98 @@
       "NS3": "#a50026",
       "NS4a": "#762a83",
       "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
+      "NS5": "#c2a5cf",
+      "prM": "#74add1"
     },
-    "structural_genes": ["C", "prM", "Env"],
-    "nonstructural_genes": ["NS1", "NS2a", "NS2b", "NS3", "NS4a", "NS4b", "NS5"]
+    "family": "flavivirus",
+    "gene_coords": {
+      "C": [
+        97,
+        465
+      ],
+      "Env": [
+        967,
+        2469
+      ],
+      "NS1": [
+        2470,
+        3525
+      ],
+      "NS2a": [
+        3526,
+        4218
+      ],
+      "NS2b": [
+        4219,
+        4611
+      ],
+      "NS3": [
+        4612,
+        6468
+      ],
+      "NS4a": [
+        6469,
+        6915
+      ],
+      "NS4b": [
+        6916,
+        7671
+      ],
+      "NS5": [
+        7672,
+        10395
+      ],
+      "prM": [
+        466,
+        966
+      ]
+    },
+    "genome_length": 11029,
+    "name": "West Nile virus",
+    "nonstructural_genes": [
+      "NS1",
+      "NS2a",
+      "NS2b",
+      "NS3",
+      "NS4a",
+      "NS4b",
+      "NS5"
+    ],
+    "structural_genes": [
+      "C",
+      "prM",
+      "Env"
+    ]
   },
   "NC_075022.1": {
-    "name": "Venezuelan equine encephalitis virus",
+    "colors": {
+      "C": "#4575b4",
+      "E1": "#abd9e9",
+      "E2": "#7fb3d3",
+      "E3": "#5ba5c9",
+      "nsP1": "#fdae61",
+      "nsP2": "#f46d43",
+      "nsP3": "#d73027",
+      "nsP4": "#a50026"
+    },
     "family": "alphavirus",
-    "genome_length": 11522,
     "gene_coords": {
+      "C": [
+        7667,
+        7900
+      ],
+      "E1": [
+        9395,
+        11023
+      ],
+      "E2": [
+        8060,
+        9394
+      ],
+      "E3": [
+        7901,
+        8059
+      ],
       "nsP1": [
         84,
         1685
@@ -269,45 +344,21 @@
       "nsP4": [
         5946,
         7664
-      ],
-      "C": [
-        7667,
-        7900
-      ],
-      "E3": [
-        7901,
-        8059
-      ],
-      "E2": [
-        8060,
-        9394
-      ],
-      "E1": [
-        9395,
-        11023
       ]
     },
-    "colors": {
-      "nsP1": "#fdae61",
-      "nsP2": "#f46d43",
-      "nsP3": "#d73027",
-      "nsP4": "#a50026",
-      "C": "#4575b4",
-      "E3": "#5ba5c9",
-      "E2": "#7fb3d3",
-      "E1": "#abd9e9"
-    },
-    "structural_genes": [
-      "C",
-      "E3",
-      "E2",
-      "E1"
-    ],
+    "genome_length": 11522,
+    "name": "Venezuelan equine encephalitis virus",
     "nonstructural_genes": [
       "nsP1",
       "nsP2",
       "nsP3",
       "nsP4"
+    ],
+    "structural_genes": [
+      "C",
+      "E3",
+      "E2",
+      "E1"
     ]
   }
 }

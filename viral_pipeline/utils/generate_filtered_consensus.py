@@ -15,9 +15,22 @@ import json
 
 def read_virus_config(accession):
     """Read virus configuration from known_viruses.json"""
-    config_file = Path(__file__).parent / "known_viruses.json"
-    if not config_file.exists():
-        print(f"Warning: {config_file} not found")
+    # Try multiple possible locations for the config file
+    possible_paths = [
+        Path(__file__).parent / "known_viruses.json",  # Same directory as script
+        Path(__file__).parent.parent / "visualization" / "known_viruses.json",  # Visualization directory
+        Path(__file__).parent.parent.parent / "known_viruses.json",  # Project root
+        Path("known_viruses.json"),  # Current working directory
+    ]
+    
+    config_file = None
+    for path in possible_paths:
+        if path.exists():
+            config_file = path
+            break
+    
+    if not config_file:
+        print(f"Warning: known_viruses.json not found in any expected location")
         return None
     
     with open(config_file, 'r') as f:
