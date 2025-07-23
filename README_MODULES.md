@@ -48,6 +48,7 @@ cd /scratch/sahlab/kathie/my_analysis
   --freq 0.01
 
 # Module 4: Mutation Visualization
+# NOTE: Use ONLY the filename with --output when using --outdir
 /home/mihindu/miniforge3/bin/mamba run -n viral_genomics \
   python3 ${PIPELINE_DIR}/viral_pipeline/visualization/visualize_mutations_python_outdir.py \
   --input sample_results/sample_filtered_mutations.tsv \
@@ -85,6 +86,15 @@ sbatch ${PIPELINE_DIR}/viral_pipeline/analysis/submit_viral_diagnostic.sh \
   --depth 200 \
   --freq 0.05 \
   --output-prefix sample_results/sample_consensus
+
+# Module 10: BLAST Gene Annotation (If needed for polyprotein viruses)
+# Only run if you see generic gene names like "Gene_106_10377"
+sbatch ${PIPELINE_DIR}/viral_pipeline/analysis/submit_blast_annotation.sh \
+  NC_001477.1 \
+  NC_001477.1
+
+# Update SnpEff database
+bash ${PIPELINE_DIR}/viral_pipeline/utils/update_snpeff_for_sample.sh NC_001477.1
 ```
 
 ### B. Large Sample (High depth sequencing)
@@ -116,6 +126,7 @@ sbatch /scratch/sahlab/kathie/Diamond_test/shotgun_viral_genomics/submit_viral_p
   --freq 0.05
 
 # Module 4: Visualize with higher cutoff
+# NOTE: Use ONLY the filename with --output when using --outdir
 /home/mihindu/miniforge3/bin/mamba run -n viral_genomics \
   python3 ${PIPELINE_DIR}/viral_pipeline/visualization/visualize_mutations_python_outdir.py \
   --input large_sample_results/large_sample_filtered_mutations.tsv \
@@ -164,6 +175,7 @@ sbatch /scratch/sahlab/kathie/Diamond_test/shotgun_viral_genomics/submit_viral_p
   --freq 0.10
 
 # Module 4: Visualize only high-frequency variants
+# NOTE: Use ONLY the filename with --output when using --outdir
 /home/mihindu/miniforge3/bin/mamba run -n viral_genomics \
   python3 ${PIPELINE_DIR}/viral_pipeline/visualization/visualize_mutations_python_outdir.py \
   --input extreme_sample_results/extreme_sample_filtered_mutations.tsv \
@@ -244,3 +256,32 @@ sbatch /scratch/sahlab/kathie/Diamond_test/shotgun_viral_genomics/submit_viral_p
 ### Depth visualization shows log scale
 - Add `--linear-scale` flag for actual depth values
 - Log scale is default and recommended for high-depth samples
+
+### Polyprotein-only annotation (Gene_106_10377 errors)
+If your variants are annotated with generic names like "Gene_106_10377" instead of real protein names:
+
+```bash
+# Step 1: Run BLAST annotation against a well-annotated RefSeq
+sbatch /scratch/sahlab/kathie/viral-genomics-pipeline/viral_pipeline/analysis/submit_blast_annotation.sh \
+    YOUR_ACCESSION.1 \
+    REFSEQ_ACCESSION.1
+
+# Step 2: Update SnpEff database with new annotations
+bash /scratch/sahlab/kathie/viral-genomics-pipeline/viral_pipeline/utils/update_snpeff_for_sample.sh \
+    YOUR_ACCESSION.1
+
+# Step 3: Re-run variant calling to get proper annotations
+# (Re-run your original pipeline from Module 1)
+```
+
+**Common well-annotated RefSeq references:**
+- **Zika virus**: NC_012532.1
+- **Dengue virus 1**: NC_001477.1  
+- **West Nile virus**: NC_009942.1
+- **Venezuelan equine encephalitis**: NC_001449.1
+
+This will replace generic gene IDs with descriptive names like:
+- `anchored_capsid_protein_ancC`
+- `envelope_protein_E`
+- `nonstructural_protein_NS1`
+- `RNA-dependent_RNA_polymerase_NS5`
