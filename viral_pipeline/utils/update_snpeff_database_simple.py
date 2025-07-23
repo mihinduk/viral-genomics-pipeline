@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Update SnpEff database with BLAST-derived gene annotations
-Replaces generic polyprotein annotation with individual protein annotations
+Simplified approach for viral genomes
 """
 
 import argparse
@@ -9,8 +9,8 @@ import subprocess
 import sys
 import shutil
 from pathlib import Path
-import tempfile
 from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
 
 def find_snpeff_directory():
     """Find SnpEff installation directory"""
@@ -41,7 +41,7 @@ def backup_existing_database(snpeff_dir, accession):
         return backup_path
     return None
 
-def update_snpeff_config(snpeff_dir, accession, genome_file):
+def update_snpeff_config(snpeff_dir, accession):
     """Add or update entry in snpEff.config"""
     config_file = snpeff_dir / "snpEff.config"
     
@@ -71,12 +71,12 @@ def update_snpeff_config(snpeff_dir, accession, genome_file):
     
     print(f"  Updated SnpEff config: {config_file}")
 
-def extract_cds_from_gff(genome_file, gff_file, cds_file, protein_file):
-    """Extract CDS sequences from genome based on GFF coordinates"""
+def extract_cds_and_proteins(genome_file, gff_file, cds_file, protein_file):
+    """Extract CDS and protein sequences from genome based on GFF coordinates"""
     # Read genome
     genome_record = SeqIO.read(genome_file, "fasta")
     
-    # Parse GFF and extract CDS
+    # Parse GFF and extract CDS features
     cds_records = []
     protein_records = []
     
@@ -92,28 +92,33 @@ def extract_cds_from_gff(genome_file, gff_file, cds_file, protein_file):
                 strand = parts[6]
                 attributes = parts[8]
                 
-                # Extract ID from attributes
-                cds_id = None
+                # Parse attributes
+                attr_dict = {}
                 for attr in attributes.split(';'):
-                    if attr.startswith('ID='):
-                        cds_id = attr.replace('ID=', '')
-                        break
+                    if '=' in attr:
+                        key, value = attr.split('=', 1)
+                        attr_dict[key] = value
                 
-                if cds_id:
+                if 'ID' in attr_dict and 'product' in attr_dict and 'Parent' in attr_dict:
+                    cds_id = attr_dict['ID']
+                    gene_id = attr_dict['Parent']
+                    product = attr_dict['product']
+                    
+                    # SnpEff creates transcript IDs like "TRANSCRIPT_gene_001" from gene IDs
+                    transcript_id = f"TRANSCRIPT_{gene_id}"
+                    
                     # Extract sequence
                     cds_seq = genome_record.seq[start:end]
                     if strand == '-':
                         cds_seq = cds_seq.reverse_complement()
                     
-                    # Create CDS record
-                    from Bio.SeqRecord import SeqRecord
-                    from Bio.Seq import Seq
-                    cds_record = SeqRecord(cds_seq, id=cds_id, description="")
+                    # Create CDS record with transcript ID (what SnpEff expects)
+                    cds_record = SeqRecord(cds_seq, id=transcript_id, description=f"{product} [CDS]")
                     cds_records.append(cds_record)
                     
-                    # Translate to protein
+                    # Translate to protein with informative description
                     protein_seq = cds_seq.translate(to_stop=True)
-                    protein_record = SeqRecord(protein_seq, id=cds_id, description="")
+                    protein_record = SeqRecord(protein_seq, id=transcript_id, description=f"{product} [{genome_record.id}]")
                     protein_records.append(protein_record)
     
     # Write CDS and protein files
@@ -126,7 +131,7 @@ def extract_cds_from_gff(genome_file, gff_file, cds_file, protein_file):
         print(f"  Wrote {len(protein_records)} protein sequences to: {protein_file}")
 
 def create_snpeff_database(snpeff_dir, accession, genome_file, gff_file):
-    """Create SnpEff database with new annotation"""
+    """Create SnpEff database with proper CDS and protein files"""
     
     # Create database directory
     db_dir = snpeff_dir / "data" / accession
@@ -135,6 +140,8 @@ def create_snpeff_database(snpeff_dir, accession, genome_file, gff_file):
     # Copy files to database directory
     sequences_file = db_dir / "sequences.fa"
     genes_file = db_dir / "genes.gff"
+    cds_file = db_dir / "cds.fa"
+    protein_file = db_dir / "protein.fa"
     
     shutil.copy2(genome_file, sequences_file)
     shutil.copy2(gff_file, genes_file)
@@ -143,18 +150,15 @@ def create_snpeff_database(snpeff_dir, accession, genome_file, gff_file):
     print(f"  Copied GFF to: {genes_file}")
     
     # Extract CDS and protein sequences
-    cds_file = db_dir / "cds.fa"
-    protein_file = db_dir / "protein.fa"
+    extract_cds_and_proteins(genome_file, gff_file, cds_file, protein_file)
     
-    extract_cds_from_gff(genome_file, gff_file, cds_file, protein_file)
-    
-    # Build database using mamba
+    # Build database using mamba - now we have proper CDS and protein files
     build_cmd = f"""
-/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \
+/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
     java -jar {snpeff_dir}/snpEff.jar build -gff3 -v {accession}
 """
     
-    print(f"  Building SnpEff database...")
+    print(f"  Building SnpEff database with CDS validation...")
     try:
         result = subprocess.run(build_cmd, shell=True, capture_output=True, text=True, cwd=str(snpeff_dir))
         if result.returncode != 0:
@@ -169,7 +173,7 @@ def create_snpeff_database(snpeff_dir, accession, genome_file, gff_file):
 def test_database(snpeff_dir, accession):
     """Test the database by running SnpEff info"""
     test_cmd = f"""
-/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \
+/home/mihindu/miniforge3/bin/mamba run -n viral_genomics \\
     java -jar {snpeff_dir}/snpEff.jar databases | grep {accession}
 """
     
@@ -187,22 +191,15 @@ def test_database(snpeff_dir, accession):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Update SnpEff database with BLAST-derived annotations',
+        description='Update SnpEff database with BLAST-derived annotations (simplified)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Update ZIKV database with new annotations
-  python3 update_snpeff_database.py \\
+  python3 update_snpeff_database_simple.py \\
     --accession KU955591.1 \\
     --genome cleaned_seqs/KU955591.1.fasta \\
     --gff blast_annotation_KU955591.1/KU955591.1.gff3
-  
-  # Specify custom SnpEff directory
-  python3 update_snpeff_database.py \\
-    --accession KU955591.1 \\
-    --genome cleaned_seqs/KU955591.1.fasta \\
-    --gff blast_annotation_KU955591.1/KU955591.1.gff3 \\
-    --snpeff-dir /path/to/snpEff
         """
     )
     
@@ -215,7 +212,7 @@ Examples:
     
     args = parser.parse_args()
     
-    print("SnpEff Database Updater")
+    print("SnpEff Database Updater (Simplified)")
     print("=" * 50)
     
     # Validate input files
@@ -238,9 +235,6 @@ Examples:
     
     if not snpeff_dir or not snpeff_dir.exists():
         print(f"❌ Error: SnpEff directory not found")
-        print("Available options:")
-        print("  1. Specify path with --snpeff-dir")
-        print("  2. Install SnpEff in a standard location")
         return 1
     
     snpeff_jar = snpeff_dir / "snpEff.jar"
@@ -260,7 +254,7 @@ Examples:
     
     # Update SnpEff config
     print(f"\nStep 2: Updating SnpEff configuration...")
-    update_snpeff_config(snpeff_dir, args.accession, genome_path)
+    update_snpeff_config(snpeff_dir, args.accession)
     
     # Create database
     print(f"\nStep 3: Creating SnpEff database...")
@@ -278,7 +272,7 @@ Examples:
     print(f"\nNext steps:")
     print(f"  1. Re-run variant calling on your samples")
     print(f"  2. Check that variants are now annotated with individual protein names")
-    print(f"  3. Run Module 8 for proper consensus generation")
+    print(f"  3. Run visualization with proper gene names")
     
     return 0
 

@@ -49,9 +49,23 @@ echo "  Genome: $GENOME_FILE"
 echo "  GFF: $GFF_FILE"
 echo ""
 
-# Run the database updater
+# First regenerate the GFF with simplified structure
+echo "Regenerating simplified GFF..."
+$MAMBA_CMD python3 "${PIPELINE_BASE}/viral_pipeline/utils/annotate_virus_by_blast.py" \
+    "$GENOME_FILE" \
+    --refseq NC_012532.1 \
+    --output-dir "$BLAST_DIR" \
+    --update-snpeff \
+    --min-coverage 0.8
+
+if [ $? -ne 0 ]; then
+    echo "❌ Error: Failed to regenerate GFF"
+    exit 1
+fi
+
+# Run the simplified database updater
 echo "Updating SnpEff database..."
-$MAMBA_CMD python3 "${PIPELINE_BASE}/viral_pipeline/utils/update_snpeff_database.py" \
+$MAMBA_CMD python3 "${PIPELINE_BASE}/viral_pipeline/utils/update_snpeff_database_simple.py" \
     --accession "$ACCESSION" \
     --genome "$GENOME_FILE" \
     --gff "$GFF_FILE" \

@@ -305,7 +305,7 @@ def get_gene_colors(family, genes):
     return colors, structural_genes, nonstructural_genes
 
 def create_snpeff_gff(accession, gene_coords, output_file):
-    """Create GFF3 file for SnpEff with proper gene names"""
+    """Create proper GFF3 file for SnpEff with CDS features and product attributes"""
     with open(output_file, 'w') as f:
         # Write header
         f.write("##gff-version 3\n")
@@ -313,21 +313,24 @@ def create_snpeff_gff(accession, gene_coords, output_file):
         # Sort genes by start position
         sorted_genes = sorted(gene_coords.items(), key=lambda x: x[1][0])
         
-        # Write gene and CDS features
+        # Write proper gene and CDS features following viral best practices
         for i, (gene_name, (start, end)) in enumerate(sorted_genes, 1):
-            gene_id = f"{gene_name}_gene"
-            transcript_id = f"{gene_name}_mRNA"
+            # Create systematic IDs
+            gene_id = f"gene_{i:03d}"
+            cds_id = f"cds_{i:03d}"
+            
+            # Convert gene name to proper product description
+            product = gene_name.replace('_', ' ')
             
             # Gene feature
             f.write(f"{accession}\tBLAST\tgene\t{start}\t{end}\t.\t+\t.\tID={gene_id};Name={gene_name}\n")
             
-            # mRNA feature
-            f.write(f"{accession}\tBLAST\tmRNA\t{start}\t{end}\t.\t+\t.\tID={transcript_id};Parent={gene_id};Name={gene_name}\n")
-            
-            # CDS feature
-            f.write(f"{accession}\tBLAST\tCDS\t{start}\t{end}\t.\t+\t0\tID={gene_name}_cds;Parent={transcript_id};Name={gene_name}\n")
+            # CDS feature with product attribute (this is what SnpEff uses for annotations)
+            f.write(f"{accession}\tBLAST\tCDS\t{start}\t{end}\t.\t+\t0\tID={cds_id};Parent={gene_id};product={product};Name={gene_name}\n")
     
-    print(f"\nCreated GFF3 file for SnpEff: {output_file}")
+    print(f"\nCreated proper GFF3 file for SnpEff: {output_file}")
+    print(f"  - {len(sorted_genes)} genes with CDS features")
+    print(f"  - Each CDS has product attribute for meaningful annotations")
     return output_file
 
 def update_virus_config(accession, virus_name, gene_coords, family, config_file):
