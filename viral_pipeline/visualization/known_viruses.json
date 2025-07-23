@@ -145,13 +145,118 @@
       "Env"
     ]
   },
-  "KU955591.1": {
-    "colors": {},
+  "KU955591": {
+    "colors": {
+      "POLY": "#808080"
+    },
     "family": "flavivirus",
-    "gene_coords": {},
-    "genome_length": 10806,
-    "name": "Zika virus isolate Zika virus/A.africanus-tc/SEN/1984/41525-DAK, complete genome",
-    "nonstructural_genes": [],
+    "gene_coords": {
+      "POLY": [
+        7667,
+        10375
+      ]
+    },
+    "genome_length": 0,
+    "name": "KU955591 (annotated by BLAST)",
+    "nonstructural_genes": [
+      "POLY"
+    ],
+    "structural_genes": []
+  },
+  "KU955591.1": {
+    "colors": {
+      "RNA-dependent_RNA_polymerase_NS5": "#808080",
+      "anchored_capsid_protein_ancC": "#808080",
+      "capsid_protein_C": "#808080",
+      "envelope_protein_E": "#808080",
+      "membrane_glycoprotein_M": "#808080",
+      "membrane_glycoprotein_precursor_prM": "#808080",
+      "nonstructural_protein_NS1": "#808080",
+      "nonstructural_protein_NS2A": "#808080",
+      "nonstructural_protein_NS2B": "#808080",
+      "nonstructural_protein_NS3": "#808080",
+      "nonstructural_protein_NS4A": "#808080",
+      "nonstructural_protein_NS4B": "#808080",
+      "protein_2K": "#808080",
+      "protein_pr": "#808080"
+    },
+    "family": "flavivirus",
+    "gene_coords": {
+      "RNA-dependent_RNA_polymerase_NS5": [
+        7667,
+        10375
+      ],
+      "anchored_capsid_protein_ancC": [
+        107,
+        472
+      ],
+      "capsid_protein_C": [
+        107,
+        418
+      ],
+      "envelope_protein_E": [
+        977,
+        2488
+      ],
+      "membrane_glycoprotein_M": [
+        752,
+        976
+      ],
+      "membrane_glycoprotein_precursor_prM": [
+        473,
+        976
+      ],
+      "nonstructural_protein_NS1": [
+        2489,
+        3544
+      ],
+      "nonstructural_protein_NS2A": [
+        3545,
+        4222
+      ],
+      "nonstructural_protein_NS2B": [
+        4223,
+        4612
+      ],
+      "nonstructural_protein_NS3": [
+        4613,
+        6463
+      ],
+      "nonstructural_protein_NS4A": [
+        6464,
+        6844
+      ],
+      "nonstructural_protein_NS4B": [
+        6914,
+        7666
+      ],
+      "protein_2K": [
+        6845,
+        6913
+      ],
+      "protein_pr": [
+        473,
+        751
+      ]
+    },
+    "genome_length": 0,
+    "name": "KU955591.1 (annotated by BLAST)",
+    "nonstructural_genes": [
+      "anchored_capsid_protein_ancC",
+      "capsid_protein_C",
+      "membrane_glycoprotein_precursor_prM",
+      "protein_pr",
+      "membrane_glycoprotein_M",
+      "envelope_protein_E",
+      "nonstructural_protein_NS1",
+      "nonstructural_protein_NS2A",
+      "nonstructural_protein_NS2B",
+      "nonstructural_protein_NS3",
+      "nonstructural_protein_NS4A",
+      "protein_2K",
+      "nonstructural_protein_NS4B",
+      "RNA-dependent_RNA_polymerase_NS5"
+    ],
     "structural_genes": []
   },
   "NC_001477.1": {
