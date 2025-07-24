@@ -335,23 +335,14 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     gene_height = 0.4
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
-        # Define genes that need label offsetting (virus-specific)
     offset_genes = {
-        # ZIKV-specific (mosquito-borne flavivirus)
-        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},
-        'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},
-        'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
-        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
-        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}
-    }
+        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7}
     
-    # Add POWV-specific offsets for tick-borne flaviviruses  
-    if accession and 'HM440560' in accession:
+    # Add POWV-specific offsets for tick-borne flaviviruses
+    if accession and "HM440560" in accession:
         offset_genes.update({
-            'membrane_glycoprotein_precursor_prM': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 8},
-            'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 8}
+            "membrane_glycoprotein_precursor_prM": {"offset_x": 0, "offset_y": -0.02, "fontsize": 8},
+            "membrane_glycoprotein_M": {"offset_x": 0, "offset_y": 0.02, "fontsize": 8}
         }),
         'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},

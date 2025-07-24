@@ -1,0 +1,68 @@
+{
+  "template_info": {
+    "version": "1.0.0",
+    "description": "Family-based templates for automatic virus configuration"
+  },
+  "templates": {
+    "Flaviviridae_mosquito_borne": {
+      "description": "Mosquito-borne flaviviruses ZIKV DENV1 YFV pattern",
+      "gene_count": 14,
+      "reference_accession": "KU955591.1",
+      "reference_name": "Zika virus Dakar - Perfect template",
+      "applied_to": [
+        "ZIKV",
+        "DENV1",
+        "DENV2",
+        "DENV3",
+        "DENV4",
+        "YFV"
+      ]
+    },
+    "Flaviviridae_tick_borne": {
+      "description": "Tick-borne flaviviruses POWV TBEV pattern",
+      "gene_count": 10,
+      "reference_accession": "HM440560.1",
+      "reference_name": "Powassan virus LB - Tick-adapted",
+      "applied_to": [
+        "POWV",
+        "TBEV",
+        "OHFV",
+        "KFDV"
+      ],
+      "key_differences": "Lacks ancC pr and 2K proteins"
+    },
+    "Flaviviridae_WNV_lineage1": {
+      "description": "West Nile virus lineage 1 pattern",
+      "gene_count": 14,
+      "reference_accession": "NC_009942.1",
+      "reference_name": "West Nile virus lineage 1 NY99",
+      "applied_to": [
+        "WNV_lineage1"
+      ],
+      "notes": "AY532665.1 is general WNV"
+    },
+    "Flaviviridae_WNV_lineage2": {
+      "description": "West Nile virus lineage 2 pattern",
+      "gene_count": 14,
+      "reference_accession": "NC_001563.2",
+      "reference_name": "West Nile virus lineage 2",
+      "applied_to": [
+        "WNV_lineage2"
+      ]
+    },
+    "Togaviridae_alphavirus": {
+      "description": "Alphavirus pattern VEEV CHIKV SINV",
+      "gene_count": 9,
+      "reference_accession": "NC_001449.1",
+      "reference_name": "Venezuelan equine encephalitis virus",
+      "applied_to": [
+        "VEEV",
+        "EEEV",
+        "WEEV",
+        "CHIKV",
+        "SINV",
+        "SFV"
+      ]
+    }
+  }
+}

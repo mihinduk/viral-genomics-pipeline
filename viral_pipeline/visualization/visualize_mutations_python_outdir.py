@@ -254,36 +254,8 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         display_names = {gene: gene for gene in gene_coords}    
     # If we only have Polyprotein, use hardcoded coordinates for known viruses
     if len(gene_coords) == 1 and 'Polyprotein' in gene_coords:
-        if accession == 'HM440560.1' or accession == 'HM440560':
-            # Hardcoded Powassan virus gene coordinates
-            gene_coords = {
-                'C': [110, 357],
-                'prM': [358, 858],
-                'Env': [859, 2361],
-                'NS1': [2362, 3417],
-                'NS2a': [3418, 4110],
-                'NS2b': [4111, 4503],
-                'NS3': [4504, 6360],
-                'NS4a': [6361, 6807],
-                'NS4b': [6808, 7563],
-                'NS5': [7564, 10287]
-            }
-            # Use standard flavivirus colors
-            gene_colors = {
-                'C': '#4575b4',
-                'prM': '#74add1',
-                'Env': '#abd9e9',
-                'NS1': '#fee090',
-                'NS2a': '#fdae61',
-                'NS2b': '#f46d43',
-                'NS3': '#d73027',
-                'NS4a': '#a50026',
-                'NS4b': '#762a83',
-                'NS5': '#5aae61'
-            }
-            structural_genes = ['C', 'prM', 'Env']
-            nonstructural_genes = ['NS1', 'NS2a', 'NS2b', 'NS3', 'NS4a', 'NS4b', 'NS5']
-            print('Using hardcoded Powassan virus gene coordinates')
+        # POWV now uses database configuration (removed hardcoded coordinates)
+        pass
 
         elif accession == 'NC_075022.1':
             # Hardcoded VEEV (alphavirus) gene coordinates
@@ -332,24 +304,8 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     
     # Draw genes and handle overlapping labels
     # Define genes that need label offsetting for flaviviruses
-        # Define genes that need label offsetting for different virus families
     offset_genes = {
-        # ZIKV-specific (mosquito-borne flavivirus)
-        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},
-        'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},
-        'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
-        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
-        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}
-    }
-    
-    # Add POWV-specific offsets for tick-borne flaviviruses
-    if accession and 'HM440560' in accession:
-        offset_genes.update({
-            'membrane_glycoprotein_precursor_prM': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 8},
-            'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 8}
-        }),  # ancC above and left
+        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},  # ancC above and left
         'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},  # C moved further right to center of gray bar between ancC and pr
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},  # M same size as E, horizontally aligned
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},  # pr above and left
@@ -440,22 +396,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         
         # Group mutations by position to handle multiple mutations at same position
         position_mutations = {}
-        # Sort mutations to draw synonymous first, then non-synonymous on top
-        sorted_mutations = []
-        synonymous_mutations = []
-        nonsynonymous_mutations = []
-        
         for _, mutation in display_mutations.iterrows():
-            mutation_type = mutation.get("EFFECT", "").lower()
-            if "synonymous_variant" in mutation_type:
-                synonymous_mutations.append(mutation)
-            else:
-                nonsynonymous_mutations.append(mutation)
-        
-        # Draw synonymous first (will be underneath), then non-synonymous (on top)
-        all_mutations_ordered = synonymous_mutations + nonsynonymous_mutations
-        
-        for mutation in all_mutations_ordered:
             pos = mutation['POS']
             if pos not in position_mutations:
                 position_mutations[pos] = []
