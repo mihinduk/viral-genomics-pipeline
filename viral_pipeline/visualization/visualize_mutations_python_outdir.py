@@ -257,32 +257,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         # POWV now uses database configuration (removed hardcoded coordinates)
         pass
 
-        elif accession == 'NC_075022.1':
-            # Hardcoded VEEV (alphavirus) gene coordinates
-            gene_coords = {
-                'nsP1': [84, 1685],
-                'nsP2': [1686, 4226],
-                'nsP3': [4227, 5945],
-                'nsP4': [5946, 7664],
-                'C': [7667, 7900],
-                'E3': [7901, 8059],
-                'E2': [8060, 9394],
-                'E1': [9395, 11023]
-            }
-            # Alphavirus-specific colors
-            gene_colors = {
-                'nsP1': '#d62728',    # Red
-                'nsP2': '#ff7f0e',    # Orange  
-                'nsP3': '#2ca02c',    # Green
-                'nsP4': '#1f77b4',    # Blue
-                'C': '#9467bd',       # Purple
-                'E3': '#8c564b',      # Brown
-                'E2': '#e377c2',      # Pink
-                'E1': '#7f7f7f'       # Gray
-            }
-            structural_genes = ['C', 'E3', 'E2', 'E1']
-            nonstructural_genes = ['nsP1', 'nsP2', 'nsP3', 'nsP4']
-            print('Using hardcoded VEEV gene coordinates')
+        # All viruses now use database configuration
     
     
     # Set up the plot
