@@ -75,74 +75,79 @@
   "HM440560.1": {
     "name": "Powassan virus",
     "family": "flavivirus",
-    "genome_length": 10839,
     "gene_coords": {
-      "C": [
+      "capsid_protein_C": [
         110,
-        357
+        424
       ],
-      "prM": [
-        358,
-        858
+      "membrane_glycoprotein_precursor_prM": [
+        425,
+        919
       ],
-      "Env": [
-        859,
-        2361
+      "membrane_glycoprotein_M": [
+        670,
+        919
       ],
-      "NS1": [
-        2362,
-        3417
+      "envelope_protein_E": [
+        920,
+        2404
       ],
-      "NS2a": [
-        3418,
-        4110
+      "nonstructural_protein_NS1": [
+        2405,
+        3460
       ],
-      "NS2b": [
-        4111,
-        4503
+      "nonstructural_protein_NS2A": [
+        3461,
+        4114
       ],
-      "NS3": [
-        4504,
-        6360
+      "nonstructural_protein_NS2B": [
+        4115,
+        4231
       ],
-      "NS4a": [
-        6361,
-        6807
+      "nonstructural_protein_NS3": [
+        4232,
+        6085
       ],
-      "NS4b": [
-        6808,
-        7563
+      "nonstructural_protein_NS4A": [
+        6086,
+        6466
       ],
-      "NS5": [
-        7564,
-        10287
+      "nonstructural_protein_NS4B": [
+        6467,
+        7210
+      ],
+      "RNA-dependent_RNA_polymerase_NS5": [
+        7211,
+        10111
       ]
     },
     "colors": {
-      "C": "#4575b4",
-      "prM": "#74add1",
-      "Env": "#abd9e9",
-      "NS1": "#fdae61",
-      "NS2a": "#f46d43",
-      "NS2b": "#d73027",
-      "NS3": "#a50026",
-      "NS4a": "#762a83",
-      "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
+      "capsid_protein_C": "#4575b4",
+      "membrane_glycoprotein_precursor_prM": "#74add1",
+      "membrane_glycoprotein_M": "#abd9e9",
+      "envelope_protein_E": "#e0f3f8",
+      "nonstructural_protein_NS1": "#fee090",
+      "nonstructural_protein_NS2A": "#fdae61",
+      "nonstructural_protein_NS2B": "#f46d43",
+      "nonstructural_protein_NS3": "#d73027",
+      "nonstructural_protein_NS4A": "#a50026",
+      "nonstructural_protein_NS4B": "#762a83",
+      "RNA-dependent_RNA_polymerase_NS5": "#5aae61"
     },
     "structural_genes": [
-      "C",
-      "prM",
-      "Env"
+      "capsid_protein_C",
+      "membrane_glycoprotein_precursor_prM",
+      "membrane_glycoprotein_M",
+      "envelope_protein_E"
     ],
     "nonstructural_genes": [
-      "NS1",
-      "NS2a",
-      "NS2b",
-      "NS3",
-      "NS4a",
-      "NS4b",
-      "NS5"
+      "nonstructural_protein_NS1",
+      "nonstructural_protein_NS2A",
+      "nonstructural_protein_NS2B",
+      "nonstructural_protein_NS3",
+      "nonstructural_protein_NS4A",
+      "nonstructural_protein_NS4B",
+      "RNA-dependent_RNA_polymerase_NS5"
     ]
   },
   "NC_001477.1": {

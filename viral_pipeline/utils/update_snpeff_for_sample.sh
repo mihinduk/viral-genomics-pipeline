@@ -29,6 +29,7 @@ echo ""
 GENOME_FILE="cleaned_seqs/${ACCESSION}.fasta"
 BLAST_DIR="blast_annotation_${ACCESSION}"
 GFF_FILE="${BLAST_DIR}/${ACCESSION}.gff3"
+SUMMARY_FILE="${BLAST_DIR}/${ACCESSION}_annotation_summary.json"
 
 # Check if files exist
 if [ ! -f "$GENOME_FILE" ]; then
@@ -44,16 +45,31 @@ if [ ! -f "$GFF_FILE" ]; then
     exit 1
 fi
 
+if [ ! -f "$SUMMARY_FILE" ]; then
+    echo "❌ Error: Summary file not found: $SUMMARY_FILE"
+    echo "Please run BLAST annotation first to generate the summary"
+    exit 1
+fi
+
+# Extract the reference accession that was actually used
+REFSEQ_USED=$(grep '"refseq_used"' "$SUMMARY_FILE" | cut -d'"' -f4)
+if [ -z "$REFSEQ_USED" ]; then
+    echo "❌ Error: Could not determine RefSeq reference from $SUMMARY_FILE"
+    exit 1
+fi
+
 echo "Found required files:"
 echo "  Genome: $GENOME_FILE"
 echo "  GFF: $GFF_FILE"
+echo "  Summary: $SUMMARY_FILE"
+echo "  RefSeq used: $REFSEQ_USED"
 echo ""
 
-# First regenerate the GFF with simplified structure
-echo "Regenerating simplified GFF..."
+# First regenerate the GFF with simplified structure using the correct reference
+echo "Regenerating simplified GFF with reference: $REFSEQ_USED..."
 $MAMBA_CMD python3 "${PIPELINE_BASE}/viral_pipeline/utils/annotate_virus_by_blast.py" \
     "$GENOME_FILE" \
-    --refseq NC_012532.1 \
+    --refseq "$REFSEQ_USED" \
     --output-dir "$BLAST_DIR" \
     --update-snpeff \
     --min-coverage 0.8

@@ -74,76 +74,87 @@
   },
   "HM440560.1": {
     "colors": {
-      "C": "#4575b4",
-      "Env": "#abd9e9",
-      "NS1": "#fdae61",
-      "NS2a": "#f46d43",
-      "NS2b": "#d73027",
-      "NS3": "#a50026",
-      "NS4a": "#762a83",
-      "NS4b": "#9970ab",
-      "NS5": "#c2a5cf",
-      "prM": "#74add1"
+      "PreM_protein": "#808080",
+      "RNA-dependent_RNA_polymerase": "#808080",
+      "anchored_core_protein_C": "#808080",
+      "core_protein_C": "#808080",
+      "envelope_protein": "#808080",
+      "matrix_protein_M": "#808080",
+      "non-structural_protein_NS1": "#808080",
+      "non-structural_protein_NS2a": "#808080",
+      "non-structural_protein_NS2b": "#808080",
+      "non-structural_protein_NS3": "#808080",
+      "non-structural_protein_NS4a": "#808080",
+      "non-structural_protein_NS4b": "#808080"
     },
     "family": "flavivirus",
     "gene_coords": {
-      "C": [
-        110,
-        357
+      "PreM_protein": [
+        441,
+        944
       ],
-      "Env": [
-        859,
-        2361
+      "RNA-dependent_RNA_polymerase": [
+        7647,
+        10355
       ],
-      "NS1": [
-        2362,
-        3417
+      "anchored_core_protein_C": [
+        111,
+        440
       ],
-      "NS2a": [
-        3418,
-        4110
+      "core_protein_C": [
+        165,
+        392
       ],
-      "NS2b": [
-        4111,
-        4503
+      "envelope_protein": [
+        945,
+        2435
       ],
-      "NS3": [
-        4504,
-        6360
+      "matrix_protein_M": [
+        720,
+        944
       ],
-      "NS4a": [
-        6361,
-        6807
+      "non-structural_protein_NS1": [
+        2436,
+        3494
       ],
-      "NS4b": [
-        6808,
-        7563
+      "non-structural_protein_NS2a": [
+        3495,
+        4184
       ],
-      "NS5": [
-        7564,
-        10287
+      "non-structural_protein_NS2b": [
+        4185,
+        4577
       ],
-      "prM": [
-        358,
-        858
+      "non-structural_protein_NS3": [
+        4578,
+        6443
+      ],
+      "non-structural_protein_NS4a": [
+        6444,
+        6821
+      ],
+      "non-structural_protein_NS4b": [
+        6891,
+        7646
       ]
     },
-    "genome_length": 10839,
-    "name": "Powassan virus",
+    "genome_length": 0,
+    "name": "HM440560.1 (annotated by BLAST)",
     "nonstructural_genes": [
-      "NS1",
-      "NS2a",
-      "NS2b",
-      "NS3",
-      "NS4a",
-      "NS4b",
-      "NS5"
+      "anchored_core_protein_C",
+      "core_protein_C",
+      "PreM_protein",
+      "matrix_protein_M",
+      "envelope_protein",
+      "non-structural_protein_NS1",
+      "non-structural_protein_NS2a",
+      "non-structural_protein_NS2b",
+      "non-structural_protein_NS3",
+      "non-structural_protein_NS4a",
+      "non-structural_protein_NS4b",
+      "RNA-dependent_RNA_polymerase"
     ],
-    "structural_genes": [
-      "C",
-      "prM",
-      "Env"
-    ]
+    "structural_genes": []
   },
   "KU955591": {
     "colors": {

@@ -332,8 +332,24 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     
     # Draw genes and handle overlapping labels
     # Define genes that need label offsetting for flaviviruses
+        # Define genes that need label offsetting for different virus families
     offset_genes = {
-        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},  # ancC above and left
+        # ZIKV-specific (mosquito-borne flavivirus)
+        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},
+        'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},
+        'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
+        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
+        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
+        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}
+    }
+    
+    # Add POWV-specific offsets for tick-borne flaviviruses
+    if accession and 'HM440560' in accession:
+        offset_genes.update({
+            'membrane_glycoprotein_precursor_prM': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 8},
+            'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 8}
+        }),  # ancC above and left
         'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},  # C moved further right to center of gray bar between ancC and pr
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},  # M same size as E, horizontally aligned
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},  # pr above and left
