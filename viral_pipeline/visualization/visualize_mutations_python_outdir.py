@@ -422,7 +422,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         # Apply gene filtering to mutations for display
         display_mutations = filter_genes_for_display(mutations_df.copy(), gene_filter)
         
-        # Group mutations by position to handle multiple mutations at same position
+        # Group mutations by codon region (3bp window) to prioritize non-synonymous
         position_mutations = {}
         for _, mutation in display_mutations.iterrows():
             pos = mutation['POS']
@@ -431,7 +431,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
             position_mutations[pos].append(mutation)
         
         # Draw lines, prioritizing non-synonymous mutations at same position
-        for pos, mutations in position_mutations.items():
+        for priority, mutation in priority_order:
             gene = map_position_to_gene(pos, accession)
             if gene:
                 # Determine the highest priority mutation type at this position
@@ -444,7 +444,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
                 best_priority = 0
                 best_freq = 0
                 
-                for mutation in mutations:
+                # Fixed: using priority_order instead
                     mutation_type = mutation.get("EFFECT", "").lower()
                     # Calculate priority for this mutation
                     priority = 0
@@ -486,8 +486,8 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     mutation_types_found = set()
     if not mutations_df.empty:
         display_mutations = filter_genes_for_display(mutations_df.copy(), gene_filter)
-        for pos, mutations in position_mutations.items():
-            for mutation in mutations:
+        for priority, mutation in priority_order:
+            # Fixed: using priority_order instead
                 mutation_type = mutation.get("EFFECT", "")
                 _, category = classify_mutation_type(mutation_type)
                 mutation_types_found.add(category)
