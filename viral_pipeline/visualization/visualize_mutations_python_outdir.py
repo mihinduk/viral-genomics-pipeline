@@ -422,16 +422,31 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         # Apply gene filtering to mutations for display
         display_mutations = filter_genes_for_display(mutations_df.copy(), gene_filter)
         
-        # Group mutations by codon region (3bp window) to prioritize non-synonymous
+        # Group mutations by position to handle multiple mutations at same position
         position_mutations = {}
+        # Sort mutations to draw synonymous first, then non-synonymous on top
+        sorted_mutations = []
+        synonymous_mutations = []
+        nonsynonymous_mutations = []
+        
         for _, mutation in display_mutations.iterrows():
+            mutation_type = mutation.get("EFFECT", "").lower()
+            if "synonymous_variant" in mutation_type:
+                synonymous_mutations.append(mutation)
+            else:
+                nonsynonymous_mutations.append(mutation)
+        
+        # Draw synonymous first (will be underneath), then non-synonymous (on top)
+        all_mutations_ordered = synonymous_mutations + nonsynonymous_mutations
+        
+        for mutation in all_mutations_ordered:
             pos = mutation['POS']
             if pos not in position_mutations:
                 position_mutations[pos] = []
             position_mutations[pos].append(mutation)
         
         # Draw lines, prioritizing non-synonymous mutations at same position
-        for priority, mutation in priority_order:
+        for pos, mutations in position_mutations.items():
             gene = map_position_to_gene(pos, accession)
             if gene:
                 # Determine the highest priority mutation type at this position
@@ -444,7 +459,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
                 best_priority = 0
                 best_freq = 0
                 
-                # Fixed: using priority_order instead
+                for mutation in mutations:
                     mutation_type = mutation.get("EFFECT", "").lower()
                     # Calculate priority for this mutation
                     priority = 0
@@ -486,8 +501,8 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     mutation_types_found = set()
     if not mutations_df.empty:
         display_mutations = filter_genes_for_display(mutations_df.copy(), gene_filter)
-        for priority, mutation in priority_order:
-            # Fixed: using priority_order instead
+        for pos, mutations in position_mutations.items():
+            for mutation in mutations:
                 mutation_type = mutation.get("EFFECT", "")
                 _, category = classify_mutation_type(mutation_type)
                 mutation_types_found.add(category)
