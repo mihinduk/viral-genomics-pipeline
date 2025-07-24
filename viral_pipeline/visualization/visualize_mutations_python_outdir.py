@@ -7,6 +7,15 @@ Designed for M2 Mac compatibility and ease of use for bench scientists.
 """
 
 import argparse
+
+# Import gene name mapper for standardized display names
+try:
+    from gene_name_mapper import GeneNameMapper
+    gene_mapper = GeneNameMapper()
+except ImportError:
+    print("Warning: Gene name mapper not available, using full names")
+    gene_mapper = None
+
 # Use dynamic virus configuration if available
 try:
     from virus_config_framework import VirusConfigManager
@@ -23,10 +32,28 @@ try:
     
     def get_gene_info(accession):
         info = vcm.get_virus_info(accession)
-        return (info.get("gene_coords", {}), 
-                info.get("colors", {}),
+        gene_coords = info.get("gene_coords", {})
+        colors = info.get("colors", {})
+        
+        # Apply gene name mapping if available
+        if gene_mapper:
+            family = info.get("family", "flavivirus")
+            display_names = {}
+            mapped_colors = {}
+            for gene in gene_coords:
+                display_name = gene_mapper.get_display_name(gene, family)
+                display_names[gene] = display_name
+                # Get standardized color
+                mapped_colors[gene] = gene_mapper.get_gene_color(gene, family)
+        else:
+            display_names = {gene: gene for gene in gene_coords}
+            mapped_colors = colors
+            
+        return (gene_coords, 
+                mapped_colors,
                 info.get("structural_genes", []),
-                info.get("nonstructural_genes", []))
+                info.get("nonstructural_genes", []),
+                display_names)
     
     print("Using dynamic virus configuration framework")
 except ImportError:
@@ -39,10 +66,28 @@ except ImportError:
         
         def get_gene_info(accession):
             info = simple_virus_manager.get_virus_info(accession)
-            return (info.get("gene_coords", {}), 
-                    info.get("colors", {}),
+            gene_coords = info.get("gene_coords", {})
+            colors = info.get("colors", {})
+            
+            # Apply gene name mapping if available
+            if gene_mapper:
+                family = info.get("family", "flavivirus")
+                display_names = {}
+                mapped_colors = {}
+                for gene in gene_coords:
+                    display_name = gene_mapper.get_display_name(gene, family)
+                    display_names[gene] = display_name
+                    # Get standardized color
+                    mapped_colors[gene] = gene_mapper.get_gene_color(gene, family)
+            else:
+                display_names = {gene: gene for gene in gene_coords}
+                mapped_colors = colors
+                
+            return (gene_coords, 
+                    mapped_colors,
                     info.get("structural_genes", []),
-                    info.get("nonstructural_genes", []))
+                    info.get("nonstructural_genes", []),
+                    display_names)
         
         print("Using simple virus configuration manager")
     except ImportError:
@@ -62,6 +107,50 @@ import warnings
 
 # Suppress matplotlib warnings for cleaner output
 warnings.filterwarnings('ignore', category=UserWarning)
+
+def classify_mutation_type(effect_string, default_color="#1f77b4"):
+    """Classify mutation type based on SnpEff EFFECT annotation
+    Returns (color, category) tuple for comprehensive mutation classification
+    """
+    if not effect_string or pd.isna(effect_string):
+        return default_color, "Other"
+    
+    effect = str(effect_string).lower()
+    
+    # High impact mutations (most severe)
+    if any(term in effect for term in ['stop_gained', 'nonsense']):
+        return "#d62728", "Nonsense/Stop Gained"  # Dark red
+    elif 'stop_lost' in effect:
+        return "#8b0000", "Stop Lost"  # Dark red
+    elif any(term in effect for term in ['start_lost', 'initiator_codon']):
+        return "#800080", "Start Lost"  # Purple
+    elif 'frameshift' in effect:
+        return "#ff1493", "Frameshift"  # Deep pink
+    elif any(term in effect for term in ['splice_acceptor', 'splice_donor', 'splice_region']):
+        return "#4169e1", "Splice Site"  # Royal blue
+    elif any(term in effect for term in ['chromosome_large_deletion', 'structural_variant']):
+        return "#ff4500", "Other High Impact"  # Orange red
+    
+    # Moderate impact mutations
+    elif 'missense_variant' in effect:
+        return "#ff7f0e", "Missense"  # Orange
+    elif any(term in effect for term in ['inframe_deletion', 'inframe_insertion', 'disruptive_inframe']):
+        return "#ffa500", "In-frame Indel"  # Orange
+    
+    # Low impact mutations
+    elif 'synonymous_variant' in effect:
+        return "#2ca02c", "Synonymous"  # Green
+    
+    # Modifier mutations (regulatory)
+    elif any(term in effect for term in ['5_prime_utr', '3_prime_utr', 'upstream', 'downstream']):
+        return "#32cd32", "Regulatory"  # Lime green
+    elif 'intron' in effect:
+        return "#90ee90", "Intronic"  # Light green
+    elif 'intergenic' in effect:
+        return "#98fb98", "Intergenic"  # Pale green
+    
+    # Default for unclassified
+    return "#708090", "Other"  # Slate gray
 
 def check_dependencies():
     """Check if all required Python packages are available"""
@@ -106,7 +195,11 @@ GENOME_LENGTH = 11029
 
 def map_position_to_gene(position, accession):
     """Map a genomic position to the corresponding gene"""
-    gene_coords, _, _, _ = get_gene_info(accession)
+    gene_info = get_gene_info(accession)
+    if len(gene_info) == 5:
+        gene_coords, _, _, _, _ = gene_info
+    else:
+        gene_coords, _, _, _ = gene_info
     for gene, (start, end) in gene_coords.items():
         if start <= position <= end:
             return gene
@@ -143,11 +236,22 @@ def filter_mutations(df, cutoff, effect_filter=None):
 def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_freq=0.5, accession=None):
     """Create the linear genome diagram with gene blocks"""
     # Get virus-specific gene information
-    gene_coords, gene_colors, _, _ = get_gene_info(accession)
+    gene_info = get_gene_info(accession)
+    if len(gene_info) == 5:
+        gene_coords, gene_colors, _, _, display_names = gene_info
+    else:
+        gene_coords, gene_colors, _, _ = gene_info
+        display_names = {gene: gene for gene in gene_coords}
 
     """Create the linear genome diagram with gene blocks"""
     # Get dynamic gene info for this virus
-    gene_coords, gene_colors, structural_genes, nonstructural_genes = get_gene_info(accession)    
+    gene_info = get_gene_info(accession)
+    if len(gene_info) == 5:
+        gene_coords, gene_colors, structural_genes, nonstructural_genes, display_names = gene_info
+    else:
+        # Fallback for old format
+        gene_coords, gene_colors, structural_genes, nonstructural_genes = gene_info
+        display_names = {gene: gene for gene in gene_coords}    
     # If we only have Polyprotein, use hardcoded coordinates for known viruses
     if len(gene_coords) == 1 and 'Polyprotein' in gene_coords:
         if accession == 'HM440560.1' or accession == 'HM440560':
@@ -226,17 +330,43 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
                          facecolor='lightgray', edgecolor='black', linewidth=0.5)
         ax.add_patch(utr5_rect)
     
-    # Draw genes
+    # Draw genes and handle overlapping labels
+    # Define genes that need label offsetting for flaviviruses
+    offset_genes = {
+        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},  # ancC above and left
+        'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},  # C moved further right to center of gray bar between ancC and pr
+        'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},  # M same size as E, horizontally aligned
+        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},  # pr above and left
+        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},  # prM below and right
+        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},  # 2K above
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}  # NS4A below
+    }
+    
     for gene, (start, end) in gene_coords.items():
         width = end - start + 1
         rect = Rectangle((start-1, gene_y), width, gene_height,
                         facecolor=gene_colors.get(gene, "#808080"), edgecolor='black', linewidth=0.5)
         ax.add_patch(rect)
         
-        # Add gene label
+        # Add gene label with offset handling
         gene_center = start + width/2 - 1
-        ax.text(gene_center, gene_y + gene_height/2, gene, 
-               ha='center', va='center', fontsize=9, fontweight='bold')
+        # Use display name if available
+        display_name = display_names.get(gene, gene)
+        
+        # Check if this gene needs offset
+        if gene in offset_genes:
+            x_offset = offset_genes[gene].get('offset_x', 0)
+            y_offset = offset_genes[gene].get('offset_y', 0)
+            font_size = offset_genes[gene].get('fontsize', 8)
+            label_x = gene_center + x_offset
+            label_y = gene_y + gene_height/2 + y_offset
+        else:
+            label_x = gene_center
+            label_y = gene_y + gene_height/2
+            font_size = 9
+            
+        ax.text(label_x, label_y, display_name, 
+               ha='center', va='center', fontsize=font_size, fontweight='bold')
     
     # Draw 3' UTR
     # Find last gene end
@@ -248,8 +378,18 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         ax.add_patch(utr3_rect)
     
     # Add structural/non-structural labels
-    # Find structural gene boundaries
-    struct_coords = [(start, end) for gene, (start, end) in gene_coords.items() if gene in structural_genes]
+    # Find structural gene boundaries (use display names for classification)
+    struct_coords = []
+    nonstruct_coords = []
+    
+    for gene, (start, end) in gene_coords.items():
+        display_name = display_names.get(gene, gene)
+        # Check if the display name indicates structural protein
+        if any(struct_gene in gene for struct_gene in structural_genes) or display_name in ['C', 'ancC', 'pr', 'prM', 'M', 'E', 'Env']:
+            struct_coords.append((start, end))
+        else:
+            nonstruct_coords.append((start, end))
+    
     if struct_coords:
         struct_start = min(coord[0] for coord in struct_coords) - 1
         struct_end = max(coord[1] for coord in struct_coords) - 1
@@ -259,7 +399,6 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     struct_center = (struct_start + struct_end) / 2
     
     # Find non-structural gene boundaries
-    nonstruct_coords = [(start, end) for gene, (start, end) in gene_coords.items() if gene in nonstructural_genes]
     if nonstruct_coords:
         nonstruct_start = min(coord[0] for coord in nonstruct_coords) - 1
         nonstruct_end = max(coord[1] for coord in nonstruct_coords) - 1
@@ -283,38 +422,104 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         # Apply gene filtering to mutations for display
         display_mutations = filter_genes_for_display(mutations_df.copy(), gene_filter)
         
+        # Group mutations by position to handle multiple mutations at same position
+        position_mutations = {}
         for _, mutation in display_mutations.iterrows():
             pos = mutation['POS']
+            if pos not in position_mutations:
+                position_mutations[pos] = []
+            position_mutations[pos].append(mutation)
+        
+        # Draw lines, prioritizing non-synonymous mutations at same position
+        for pos, mutations in position_mutations.items():
             gene = map_position_to_gene(pos, accession)
             if gene:
-                # Determine color based on mutation type
-                mutation_type = mutation.get("EFFECT", "")
-                if "synonymous_variant" in mutation_type:
-                    color = "#2ca02c"  # Green for synonymous
-                elif "missense_variant" in mutation_type:
-                    color = "#ff7f0e"  # Orange for missense
-                elif "stop_gained" in mutation_type or "nonsense" in mutation_type:
-                    color = "#d62728"  # Red for stop/nonsense
-                else:
-                    color = gene_colors.get(gene, "#1f77b4")  # Blue default
-                # Highlight high-frequency mutations with thicker lines
-                freq = mutation.get('Allele_Frequency', 0)
-                if freq >= highlight_freq:
-                    linewidth = 3.0
-                    alpha = 1.0
-                else:
-                    linewidth = 1.5
-                    alpha = 0.8
-                ax.plot([pos, pos], [0.25, 0.35], color=color, linewidth=linewidth, alpha=alpha)
+                # Determine the highest priority mutation type at this position
+                priority_scores = {
+                    'stop_gained': 6, 'nonsense': 6, 'stop_lost': 5, 'start_lost': 4, 
+                    'frameshift': 3, 'missense_variant': 2, 'synonymous_variant': 1
+                }
+                
+                best_mutation = None
+                best_priority = 0
+                best_freq = 0
+                
+                for mutation in mutations:
+                    mutation_type = mutation.get("EFFECT", "").lower()
+                    # Calculate priority for this mutation
+                    priority = 0
+                    for effect, score in priority_scores.items():
+                        if effect in mutation_type:
+                            priority = max(priority, score)
+                    
+                    freq = mutation.get('Allele_Frequency', 0)
+                    
+                    # Choose mutation with highest priority, or highest frequency if same priority
+                    if priority > best_priority or (priority == best_priority and freq > best_freq):
+                        best_mutation = mutation
+                        best_priority = priority
+                        best_freq = freq
+                
+                if best_mutation is not None:
+                    # Determine color based on best mutation type
+                    mutation_type = best_mutation.get("EFFECT", "")
+                    if "synonymous_variant" in mutation_type:
+                        color = "#2ca02c"  # Green for synonymous
+                    elif "missense_variant" in mutation_type:
+                        color = "#ff7f0e"  # Orange for missense
+                    elif "stop_gained" in mutation_type or "nonsense" in mutation_type:
+                        color = "#d62728"  # Red for stop/nonsense
+                    else:
+                        color = gene_colors.get(gene, "#1f77b4")  # Blue default
+                    
+                    # Highlight high-frequency mutations with thicker lines
+                    freq = best_mutation.get('Allele_Frequency', 0)
+                    if freq >= highlight_freq:
+                        linewidth = 3.0
+                        alpha = 1.0
+                    else:
+                        linewidth = 1.5
+                        alpha = 0.8
+                    ax.plot([pos, pos], [0.25, 0.35], color=color, linewidth=linewidth, alpha=alpha)
     
-    # Add legend for mutation colors
-    legend_elements = [
-        plt.Line2D([0], [0], color='#2ca02c', linewidth=2, label='Synonymous'),
-        plt.Line2D([0], [0], color='#ff7f0e', linewidth=2, label='Missense'),
-        plt.Line2D([0], [0], color='#d62728', linewidth=2, label='Nonsense/Stop')
-    ]
-    ax.legend(handles=legend_elements, loc='upper right', frameon=True, 
-              fancybox=True, shadow=True, fontsize=10)
+    # Create dynamic legend based on mutation types found in data
+    mutation_types_found = set()
+    if not mutations_df.empty:
+        display_mutations = filter_genes_for_display(mutations_df.copy(), gene_filter)
+        for pos, mutations in position_mutations.items():
+            for mutation in mutations:
+                mutation_type = mutation.get("EFFECT", "")
+                _, category = classify_mutation_type(mutation_type)
+                mutation_types_found.add(category)
+    
+    # Build legend elements based on what's actually in the data
+    legend_elements = []
+    legend_mapping = {
+        'Synonymous': '#2ca02c',
+        'Missense': '#ff7f0e', 
+        'Nonsense/Stop Gained': '#d62728',
+        'Stop Lost': '#8b0000',
+        'Start Lost': '#800080',
+        'Frameshift': '#ff1493',
+        'Splice Site': '#4169e1',
+        'Other High Impact': '#ff4500',
+        'In-frame Indel': '#ffa500',
+        'Regulatory': '#32cd32',
+        'Intronic': '#90ee90',
+        'Intergenic': '#98fb98',
+        'Other': '#708090'
+    }
+    
+    for category in sorted(mutation_types_found):
+        if category in legend_mapping:
+            color = legend_mapping[category]
+            legend_elements.append(plt.Line2D([0], [0], color=color, linewidth=2, label=category))
+    
+    if legend_elements:
+        # Use 2 columns if more than 6 items, otherwise 1 column
+        ncol = 2 if len(legend_elements) > 6 else 1
+        ax.legend(handles=legend_elements, loc='upper right', frameon=True, 
+                  fancybox=True, shadow=True, fontsize=9, ncol=ncol)
     
     # Format x-axis
     ax.set_xlabel('Genome Position', fontsize=12, fontweight='bold')
@@ -373,7 +578,12 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
     
     # Group by gene
     # Get dynamic gene list for this virus
-    gene_coords, gene_colors, _, _ = get_gene_info(accession)
+    gene_info = get_gene_info(accession)
+    if len(gene_info) == 5:
+        gene_coords, gene_colors, _, _, display_names = gene_info
+    else:
+        gene_coords, gene_colors, _, _ = gene_info
+        display_names = {gene: gene for gene in gene_coords}
     genes_with_mutations = []
     for gene in gene_coords.keys():
         gene_mutations = all_mutations[all_mutations['Gene'] == gene]
@@ -435,7 +645,9 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
                 table[(0, i)].set_text_props(weight='bold', color='white')
             
             # Add gene name above table
-            fig.text(x + table_width/2, y + 0.02, gene, 
+            # Use display name for table header
+            display_name = display_names.get(gene, gene)
+            fig.text(x + table_width/2, y + 0.02, display_name, 
                     ha='center', va='center', fontsize=12, 
                     fontweight='bold', color=gene_colors.get(gene, "#808080"))
 
