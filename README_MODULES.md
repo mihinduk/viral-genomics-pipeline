@@ -365,3 +365,33 @@ Output TSV files now include:
 ---
 
 *Last updated: January 2025 with comprehensive mutation type classification and visual priority system*
+
+## 🦠 **Virus Family Support**
+
+### **Flaviviridae (Mosquito-borne)**
+- **Gene Count**: 14 proteins (includes ancC, pr, 2K)
+- **Examples**: Zika virus (KU955591.1 ⭐ Perfect), West Nile virus, Dengue virus
+- **Genome Organization**: 5' UTR - ancC - C - pr/prM - M - E - NS1 - NS2A - NS2B - NS3 - NS4A - 2K - NS4B - NS5 - 3' UTR
+
+### **Flaviviridae (Tick-borne)** 
+- **Gene Count**: 10 proteins (lacks ancC, pr, 2K - tick adaptation)
+- **Examples**: Powassan virus (HM440560.1 ✅ Curated)
+- **Genome Organization**: 5' UTR - C - prM/M - E - NS1 - NS2A - NS2B - NS3 - NS4A - NS4B - NS5 - 3' UTR
+- **Key Differences**: Simplified protein repertoire, unique CS-A cyclization sequences
+
+### **Togaviridae (Alphaviruses)**
+- **Gene Count**: 8 proteins  
+- **Examples**: Venezuelan equine encephalitis virus
+- **Genome Organization**: 5' UTR - nsP1 - nsP2 - nsP3 - nsP4 - C - E3 - E2 - 6K - E1 - 3' UTR
+
+## 📊 **Updated Reference Quality Scores**
+
+ < /dev/null |  Virus Family | Accession | Virus | Proteins | Quality | Status |
+|-------------|-----------|-------|----------|---------|---------|
+| **Flaviviridae (Mosquito)** | KU955591.1 | Zika virus (Dakar) | 14 | ⭐ 10/10 | Perfect |
+| **Flaviviridae (Tick)** | HM440560.1 | Powassan virus (LB) | 10 | ✅ 8/10 | Curated |
+| **Flaviviridae (Mosquito)** | NC_075022.1 | West Nile virus | 14 | ✅ 9/10 | Excellent |
+
+---
+
+*Updated: January 2025 with comprehensive tick-borne flavivirus support based on genomic literature*
