@@ -270,5 +270,111 @@
         ]
       }
     }
+  },
+  "tick_borne_flavivirus": {
+    "standard_genes": {
+      "C": {
+        "display_name": "C",
+        "full_name": "Capsid",
+        "color": "#4575b4",
+        "type": "structural",
+        "aliases": [
+          "anchored_core_protein_C",
+          "core_protein_C",
+          "capsid_protein_C"
+        ]
+      },
+      "prM": {
+        "display_name": "prM",
+        "full_name": "Precursor membrane",
+        "color": "#74add1",
+        "type": "structural",
+        "aliases": [
+          "PreM_protein",
+          "membrane_glycoprotein_precursor_prM",
+          "matrix_protein_M"
+        ]
+      },
+      "E": {
+        "display_name": "E",
+        "full_name": "Envelope",
+        "color": "#abd9e9",
+        "type": "structural",
+        "aliases": [
+          "envelope_protein",
+          "envelope_glycoprotein_E"
+        ]
+      },
+      "NS1": {
+        "display_name": "NS1",
+        "full_name": "Non-structural protein 1",
+        "color": "#fdae61",
+        "type": "nonstructural",
+        "aliases": [
+          "non-structural_protein_NS1",
+          "nonstructural_protein_NS1"
+        ]
+      },
+      "NS2A": {
+        "display_name": "NS2A",
+        "full_name": "Non-structural protein 2A",
+        "color": "#f46d43",
+        "type": "nonstructural",
+        "aliases": [
+          "non-structural_protein_NS2a",
+          "nonstructural_protein_NS2A"
+        ]
+      },
+      "NS2B": {
+        "display_name": "NS2B",
+        "full_name": "Non-structural protein 2B",
+        "color": "#d73027",
+        "type": "nonstructural",
+        "aliases": [
+          "non-structural_protein_NS2b",
+          "nonstructural_protein_NS2B"
+        ]
+      },
+      "NS3": {
+        "display_name": "NS3",
+        "full_name": "Non-structural protein 3",
+        "color": "#a50026",
+        "type": "nonstructural",
+        "aliases": [
+          "non-structural_protein_NS3",
+          "nonstructural_protein_NS3"
+        ]
+      },
+      "NS4A": {
+        "display_name": "NS4A",
+        "full_name": "Non-structural protein 4A",
+        "color": "#762a83",
+        "type": "nonstructural",
+        "aliases": [
+          "non-structural_protein_NS4a",
+          "nonstructural_protein_NS4A"
+        ]
+      },
+      "NS4B": {
+        "display_name": "NS4B",
+        "full_name": "Non-structural protein 4B",
+        "color": "#9970ab",
+        "type": "nonstructural",
+        "aliases": [
+          "non-structural_protein_NS4b",
+          "nonstructural_protein_NS4B"
+        ]
+      },
+      "NS5": {
+        "display_name": "NS5",
+        "full_name": "Non-structural protein 5",
+        "color": "#c2a5cf",
+        "type": "nonstructural",
+        "aliases": [
+          "RNA-dependent_RNA_polymerase",
+          "nonstructural_protein_NS5"
+        ]
+      }
+    }
   }
 }
