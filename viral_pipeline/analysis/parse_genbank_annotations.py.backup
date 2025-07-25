@@ -142,7 +142,7 @@ def create_snpeff_files(annotation_data, output_dir):
     os.makedirs(output_dir, exist_ok=True)
     
     # 1. Create genes.gff file for SnpEff
-    gff_file = os.path.join(output_dir, f"{accession}.gff3")
+    gff_file = os.path.join(output_dir, f"{accession}_genes.gff")
     with open(gff_file, 'w') as f:
         f.write("##gff-version 3\n")
         f.write(f"##sequence-region {accession} 1 {annotation_data['length']}\n")

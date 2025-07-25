@@ -32,7 +32,7 @@ echo "=========================================="
 # Set paths
 MAMBA_CMD="/home/mihindu/miniforge3/bin/mamba run -n viral_genomics"
 SCRIPT_DIR="/scratch/sahlab/kathie/viral_genomics_pipeline_dev/viral-genomics-pipeline/viral_pipeline/analysis"
-OUTPUT_DIR="blast_annotation_${ACCESSION}"
+OUTPUT_DIR="/scratch/sahlab/kathie/genbank_annotations/${ACCESSION}"
 GENBANK_FILE="${ACCESSION}.gb"
 
 # Create output directory
@@ -56,7 +56,7 @@ fi
 # Parse GenBank annotations
 echo ""
 echo "Parsing mat_peptide annotations..."
-$MAMBA_CMD python3 "${SCRIPT_DIR}/parse_genbank_annotations.py" "$GENBANK_FILE" --output-dir .
+$MAMBA_CMD python3 "${SCRIPT_DIR}/parse_genbank_annotations.py" "$GENBANK_FILE" --output-dir "$OUTPUT_DIR"
 
 EXIT_CODE=$?
 
