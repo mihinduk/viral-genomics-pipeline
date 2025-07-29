@@ -62,6 +62,7 @@ def parse_mat_peptides(genbank_file):
     
     return {
         'accession': record.id,
+        'refseq_used': record.id,
         'organism': record.annotations.get('organism', 'Unknown'),
         'length': len(record.seq),
         'genes': gene_annotations

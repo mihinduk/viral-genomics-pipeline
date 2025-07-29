@@ -132,7 +132,7 @@ except:
     KNOWN_VIRUSES = {}
 
 
-def check_dependencies():
+def check_dependencies(require_samtools=True):
     """Check if all required tools and packages are available"""
     # Check Python packages
     required_packages = {
@@ -154,15 +154,16 @@ def check_dependencies():
             print(f"   - {pkg}")
         return False
     
-    # Check samtools
-    try:
-        result = subprocess.run(['samtools', '--version'], capture_output=True, text=True)
-        if result.returncode != 0:
-            print("❌ samtools not found or not working properly")
+    # Check samtools only if required (for BAM input)
+    if require_samtools:
+        try:
+            result = subprocess.run(['samtools', '--version'], capture_output=True, text=True)
+            if result.returncode != 0:
+                print("❌ samtools not found or not working properly")
+                return False
+        except FileNotFoundError:
+            print("❌ samtools not found. Please ensure samtools is installed and in PATH")
             return False
-    except FileNotFoundError:
-        print("❌ samtools not found. Please ensure samtools is installed and in PATH")
-        return False
     
     print("✅ All required dependencies found")
     return True
@@ -214,6 +215,29 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
                      highlight_low_coverage=True, figsize=(14, 8), output_file=None):
     """Create depth visualization plot with gene annotations"""
     
+    # Helper function to detect overlapping genes (for frameshift detection)
+    def find_overlapping_genes(gene_coords):
+        """Find genes that overlap with others, indicating potential frameshift relationships"""
+        overlaps = {}
+        genes_list = list(gene_coords.items())
+        
+        for i, (gene1, (start1, end1)) in enumerate(genes_list):
+            for j, (gene2, (start2, end2)) in enumerate(genes_list):
+                if i != j:  # Don't compare gene with itself
+                    # Check if there's overlap
+                    if start1 < end2 and start2 < end1:
+                        overlap_start = max(start1, start2)
+                        overlap_end = min(end1, end2)
+                        if overlap_end > overlap_start:
+                            if gene1 not in overlaps:
+                                overlaps[gene1] = []
+                            overlaps[gene1].append({
+                                'partner': gene2,
+                                'overlap_start': overlap_start,
+                                'overlap_end': overlap_end
+                            })
+        return overlaps
+    
     # Get virus information
     virus_name = get_virus_name(accession)
     gene_info = get_gene_info(accession)
@@ -261,6 +285,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         if np.any(gene_mask):
             gene_positions = positions[gene_mask]
             gene_depths = depths_plot[gene_mask]
+            # Use mapped_colors to ensure consistency with gene track and legend
             color = gene_colors.get(gene, '#808080')
             display_name = display_names.get(gene, gene)
             ax_depth.fill_between(gene_positions, 0, gene_depths, 
@@ -316,7 +341,45 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     sorted_pairs = sorted(zip(handles, labels), key=lambda x: label_positions.get(x[1], float('inf')))
     sorted_handles, sorted_labels = zip(*sorted_pairs) if sorted_pairs else ([], [])
     
-    ax_depth.legend(sorted_handles, sorted_labels)
+    # Create custom legend handles for frameshift genes
+    custom_handles = []
+    custom_labels = []
+    
+    for handle, label in zip(sorted_handles, sorted_labels):
+        # Check if this is a frameshift gene by looking up the original gene name
+        # Find the gene that corresponds to this label
+        original_gene = None
+        for gene, display_name in display_names.items():
+            if display_name == label:
+                original_gene = gene
+                break
+        
+        if original_gene:
+            # Find overlapping genes first to properly detect pr as frameshift
+            overlapping_genes_for_legend = find_overlapping_genes(gene_coords)
+            # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+            is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "protein_pr" in original_gene.lower())
+            is_frameshift = ("'" in original_gene or "'" in label or "prime" in original_gene.lower() or "prime" in label.lower() or 
+                           (is_pr_gene_legend and original_gene in overlapping_genes_for_legend))
+            
+            # Debug: Print legend frameshift detection
+            if is_pr_gene_legend or "'" in original_gene or "prime" in original_gene.lower():
+                print(f"DEBUG LEGEND: Gene '{original_gene}' (label: '{label}'):")
+                print(f"  - Is pr gene: {is_pr_gene_legend}")
+                print(f"  - Legend is_frameshift: {is_frameshift}")
+            
+            if is_frameshift:
+                # Create custom handle for frameshift genes - transparent with hatching
+                custom_handle = Rectangle((0, 0), 1, 1, facecolor='none', edgecolor='black', hatch='///', linewidth=0.5)
+                custom_handles.append(custom_handle)
+            else:
+                custom_handles.append(handle)
+        else:
+            custom_handles.append(handle)
+        
+        custom_labels.append(label)
+    
+    ax_depth.legend(custom_handles, custom_labels)
     
     # Calculate and display statistics
     stats = calculate_coverage_stats(depth_df, min_depth_threshold)
@@ -336,45 +399,152 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},
-        'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},
+        'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
         'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
         'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
-        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
+        'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
+        'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
     }
     
+    # Find overlapping genes
+    overlapping_genes = find_overlapping_genes(gene_coords)
+    
+    # Debug: Print all gene coordinates first
+    print(f"DEBUG: All gene coordinates:")
     for gene, (start, end) in gene_coords.items():
+        print(f"  - {gene}: {start}-{end}")
+    
+    # Debug: Print overlapping genes information
+    print(f"DEBUG: Found overlapping genes: {list(overlapping_genes.keys())}")
+    for gene, overlaps in overlapping_genes.items():
+        print(f"DEBUG: Gene '{gene}' overlaps with:")
+        for overlap in overlaps:
+            print(f"  - {overlap['partner']} at positions {overlap['overlap_start']}-{overlap['overlap_end']}")
+    
+    # Debug: Check for any pr-related gene
+    pr_genes = [g for g in gene_coords.keys() if 'pr' in g.lower()]
+    print(f"DEBUG: Found pr-related genes: {pr_genes}")
+    for pr_gene in pr_genes:
+        coords = gene_coords[pr_gene]
+        print(f"DEBUG: {pr_gene} coordinates: {coords}")
+        print(f"DEBUG: {pr_gene} in overlapping_genes: {pr_gene in overlapping_genes}")
+    
+    # Debug: Check for NS1' gene
+    ns1_prime_genes = [g for g in gene_coords.keys() if "'" in g or "prime" in g.lower()]
+    print(f"DEBUG: Found frameshift genes (with prime): {ns1_prime_genes}")
+    
+    for gene, (start, end) in gene_coords.items():
+        # Use same color as depth plot for consistency
         color = gene_colors.get(gene, '#808080')
-        rect = Rectangle((start, gene_y), end - start, gene_height,
-                        facecolor=color, edgecolor='black', linewidth=0.5)
-        ax_genes.add_patch(rect)
-        
-        # Add gene label using display name with offset handling
-        gene_center = (start + end) / 2
         display_name = display_names.get(gene, gene)
         
-        # Check if this gene needs offset (same system as mutation visualization)
-        if gene in offset_genes:
-            x_offset = offset_genes[gene].get('offset_x', 0)
-            y_offset = offset_genes[gene].get('offset_y', 0)
-            font_size = offset_genes[gene].get('fontsize', 10)
-            label_x = gene_center + x_offset
-            label_y = 0.5 + y_offset
-        else:
-            label_x = gene_center
-            label_y = 0.5
-            font_size = 10
+        # Check if this is a frameshift gene (contains "prime" in name or display name)
+        # Also treat 'pr' as a frameshift gene when it overlaps with other genes
+        # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+        is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "protein_pr" in gene.lower())
+        is_frameshift = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or 
+                        (is_pr_gene and gene in overlapping_genes))
+        
+        # Debug: Print frameshift detection for each gene
+        if is_pr_gene or "'" in gene or "prime" in gene.lower():
+            print(f"DEBUG: Gene '{gene}' (display: '{display_name}'):")
+            print(f"  - Contains prime in gene: {'prime' in gene.lower()}")
+            print(f"  - Contains prime in display: {'prime' in display_name.lower()}")
+            apostrophe_char = "'"
+            print(f"  - Contains apostrophe in gene: {apostrophe_char in gene}")
+            print(f"  - Contains apostrophe in display: {apostrophe_char in display_name}")
+            print(f"  - Is pr gene: {is_pr_gene}")
+            print(f"  - Is pr and overlapping: {is_pr_gene and gene in overlapping_genes}")
+            print(f"  - Final is_frameshift: {is_frameshift}")
+        
+        # Handle frameshift genes with overlapping regions
+        if is_frameshift and gene in overlapping_genes:
+            # For frameshift genes, we need to handle ALL overlapping regions
+            overlaps = overlapping_genes[gene]
             
-        # Use black text for light-colored genes (like 2K), white for others
-        if display_name == '2K':
-            text_color = 'black'
-        else:
-            text_color = 'white'
+            # Create a list of all overlapping regions and sort by position
+            overlap_regions = []
+            for overlap in overlaps:
+                overlap_regions.append((overlap['overlap_start'], overlap['overlap_end']))
             
-        ax_genes.text(label_x, label_y, display_name, ha='center', va='center',
-                     fontsize=font_size, fontweight='bold', color=text_color)
+            # Sort overlap regions by start position
+            overlap_regions.sort()
+            
+            # Merge overlapping regions if they touch or overlap
+            merged_overlaps = []
+            for region_start, region_end in overlap_regions:
+                if merged_overlaps and region_start <= merged_overlaps[-1][1]:
+                    # Extend the last region
+                    merged_overlaps[-1] = (merged_overlaps[-1][0], max(merged_overlaps[-1][1], region_end))
+                else:
+                    # Add new region
+                    merged_overlaps.append((region_start, region_end))
+            
+            # Draw the gene in segments: solid for non-overlapping, hatched for overlapping
+            current_pos = start
+            
+            for overlap_start, overlap_end in merged_overlaps:
+                # Draw solid region before this overlap (if any)
+                if current_pos < overlap_start:
+                    solid_rect = Rectangle((current_pos, gene_y), overlap_start - current_pos, gene_height,
+                                         facecolor=color, edgecolor='black', linewidth=0.5)
+                    ax_genes.add_patch(solid_rect)
+                
+                # Draw hatched overlap region
+                if overlap_start < overlap_end and overlap_start < end and overlap_end > start:
+                    # Clip overlap to gene boundaries
+                    clipped_start = max(overlap_start, start)
+                    clipped_end = min(overlap_end, end)
+                    if clipped_start < clipped_end:
+                        overlap_rect = Rectangle((clipped_start, gene_y), clipped_end - clipped_start, gene_height,
+                                               facecolor='none', edgecolor='black', linewidth=0.5, hatch='///')
+                        ax_genes.add_patch(overlap_rect)
+                
+                current_pos = max(current_pos, overlap_end)
+            
+            # Draw final solid region after all overlaps (if any)
+            if current_pos < end:
+                final_rect = Rectangle((current_pos, gene_y), end - current_pos, gene_height,
+                                     facecolor=color, edgecolor='black', linewidth=0.5)
+                ax_genes.add_patch(final_rect)
+        else:
+            # Regular gene - draw as normal solid rectangle
+            rect = Rectangle((start, gene_y), end - start, gene_height,
+                            facecolor=color, edgecolor='black', linewidth=0.5)
+            ax_genes.add_patch(rect)
+        
+        # Skip labels for frameshift genes (they should only appear in legend)
+        # Include pr genes that are frameshifts in the skip logic
+        skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or
+                     (is_pr_gene and gene in overlapping_genes and is_frameshift))
+        
+        if not skip_label:
+            # Add gene label using display name with offset handling
+            gene_center = (start + end) / 2
+            
+            # Check if this gene needs offset (same system as mutation visualization)
+            if gene in offset_genes:
+                x_offset = offset_genes[gene].get('offset_x', 0)
+                y_offset = offset_genes[gene].get('offset_y', 0)
+                font_size = offset_genes[gene].get('fontsize', 10)
+                label_x = gene_center + x_offset
+                label_y = 0.5 + y_offset
+            else:
+                label_x = gene_center
+                label_y = 0.5
+                font_size = 10
+                
+            # Use black text for light-colored genes (like 2K), white for others
+            if display_name == '2K':
+                text_color = 'black'
+            else:
+                text_color = 'white'
+                
+            ax_genes.text(label_x, label_y, display_name, ha='center', va='center',
+                         fontsize=font_size, fontweight='bold', color=text_color)
     
     # Configure gene track
     ax_genes.set_xlabel('Genome Position', fontsize=12)
@@ -509,8 +679,9 @@ def main():
     
     args = parser.parse_args()
     
-    # Check dependencies
-    if not check_dependencies():
+    # Check dependencies - only require samtools for BAM input
+    require_samtools = args.bam is not None
+    if not check_dependencies(require_samtools):
         sys.exit(1)
     
     print("\nViral Depth Visualizer")

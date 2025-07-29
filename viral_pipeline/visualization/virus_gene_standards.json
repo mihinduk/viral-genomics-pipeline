@@ -4,11 +4,12 @@
       "ancC": {
         "display_name": "ancC",
         "full_name": "Anchored capsid",
-        "color": "#3a5f8f",
+        "color": "#313695",
         "type": "structural",
         "aliases": [
-          "anchored_capsid_protein_ancC",
-          "anchored_core_protein_C"
+          "anchored_capsid_protein_C",
+          "ancC_protein",
+          "anchored_C"
         ]
       },
       "C": {
@@ -271,17 +272,30 @@
       }
     }
   },
-  "tick_borne_flavivirus": {
+  "wnv_lineage2": {
     "standard_genes": {
+      "ancC": {
+        "display_name": "ancC",
+        "full_name": "Anchored capsid",
+        "color": "#313695",
+        "type": "structural",
+        "aliases": [
+          "anchored_capsid_protein_ancC",
+          "anchored_capsid_protein_C",
+          "ancC_protein",
+          "anchored_C"
+        ]
+      },
       "C": {
         "display_name": "C",
         "full_name": "Capsid",
         "color": "#4575b4",
         "type": "structural",
         "aliases": [
-          "anchored_core_protein_C",
+          "capsid_protein_C",
           "core_protein_C",
-          "capsid_protein_C"
+          "capsid",
+          "C_protein"
         ]
       },
       "prM": {
@@ -290,9 +304,32 @@
         "color": "#74add1",
         "type": "structural",
         "aliases": [
-          "PreM_protein",
           "membrane_glycoprotein_precursor_prM",
-          "matrix_protein_M"
+          "PreM_protein",
+          "prM_protein",
+          "precursor_membrane"
+        ]
+      },
+      "pr": {
+        "display_name": "pr",
+        "full_name": "pr peptide",
+        "color": "#6ba3d0",
+        "type": "structural",
+        "aliases": [
+          "protein_pr",
+          "pr_peptide"
+        ]
+      },
+      "M": {
+        "display_name": "M",
+        "full_name": "Membrane",
+        "color": "#74add1",
+        "type": "structural",
+        "aliases": [
+          "membrane_glycoprotein_M",
+          "matrix_protein_M",
+          "membrane_protein",
+          "M_protein"
         ]
       },
       "E": {
@@ -301,78 +338,120 @@
         "color": "#abd9e9",
         "type": "structural",
         "aliases": [
+          "envelope_protein_E",
           "envelope_protein",
-          "envelope_glycoprotein_E"
+          "E_protein",
+          "Env"
         ]
       },
       "NS1": {
         "display_name": "NS1",
-        "full_name": "Non-structural protein 1",
+        "full_name": "Nonstructural protein 1",
         "color": "#fdae61",
         "type": "nonstructural",
         "aliases": [
+          "nonstructural_protein_NS1",
           "non-structural_protein_NS1",
-          "nonstructural_protein_NS1"
+          "NS1_protein"
+        ]
+      },
+      "NS1'": {
+        "display_name": "NS1'",
+        "full_name": "Nonstructural protein 1 prime",
+        "type": "nonstructural",
+        "color": "#A0522D",
+        "aliases": [
+          "NS1'",
+          "NS1_prime",
+          "NS1prime",
+          "nonstructural_protein_NS1_prime",
+          "nonstructural_protein_NS1'",
+          "non-structural_protein_NS1_prime"
         ]
       },
       "NS2A": {
         "display_name": "NS2A",
-        "full_name": "Non-structural protein 2A",
+        "full_name": "Nonstructural protein 2A",
         "color": "#f46d43",
         "type": "nonstructural",
         "aliases": [
+          "nonstructural_protein_NS2A",
           "non-structural_protein_NS2a",
-          "nonstructural_protein_NS2A"
+          "NS2A_protein",
+          "NS2a"
         ]
       },
       "NS2B": {
         "display_name": "NS2B",
-        "full_name": "Non-structural protein 2B",
+        "full_name": "Nonstructural protein 2B",
         "color": "#d73027",
         "type": "nonstructural",
         "aliases": [
+          "nonstructural_protein_NS2B",
           "non-structural_protein_NS2b",
-          "nonstructural_protein_NS2B"
+          "NS2B_protein",
+          "NS2b"
         ]
       },
       "NS3": {
         "display_name": "NS3",
-        "full_name": "Non-structural protein 3",
+        "full_name": "Nonstructural protein 3",
         "color": "#a50026",
         "type": "nonstructural",
         "aliases": [
+          "nonstructural_protein_NS3",
           "non-structural_protein_NS3",
-          "nonstructural_protein_NS3"
+          "NS3_protein",
+          "serine_protease_NS3",
+          "helicase_NS3"
         ]
       },
       "NS4A": {
         "display_name": "NS4A",
-        "full_name": "Non-structural protein 4A",
+        "full_name": "Nonstructural protein 4A",
         "color": "#762a83",
         "type": "nonstructural",
         "aliases": [
+          "nonstructural_protein_NS4A",
           "non-structural_protein_NS4a",
-          "nonstructural_protein_NS4A"
+          "NS4A_protein",
+          "NS4a"
+        ]
+      },
+      "2K": {
+        "display_name": "2K",
+        "full_name": "2K peptide",
+        "color": "#e6f5d0",
+        "type": "nonstructural",
+        "aliases": [
+          "protein_2K",
+          "2K_protein",
+          "2K_peptide"
         ]
       },
       "NS4B": {
         "display_name": "NS4B",
-        "full_name": "Non-structural protein 4B",
+        "full_name": "Nonstructural protein 4B",
         "color": "#9970ab",
         "type": "nonstructural",
         "aliases": [
+          "nonstructural_protein_NS4B",
           "non-structural_protein_NS4b",
-          "nonstructural_protein_NS4B"
+          "NS4B_protein",
+          "NS4b"
         ]
       },
       "NS5": {
         "display_name": "NS5",
-        "full_name": "Non-structural protein 5",
+        "full_name": "RNA-dependent RNA polymerase",
         "color": "#c2a5cf",
         "type": "nonstructural",
         "aliases": [
+          "RNA-dependent_RNA_polymerase_NS5",
           "RNA-dependent_RNA_polymerase",
-          "nonstructural_protein_NS5"
+          "NS5_protein",
+          "RdRp",
+          "polymerase"
         ]
       }
     }
