@@ -1,0 +1,32 @@
+{
+  "frameshift_genes": {
+    "AY532665.1": {
+      "NS1_prime": {
+        "parent_gene": "NS1",
+        "start": "same_as_parent",
+        "end_extension": 156,
+        "frame": -1,
+        "visualization": "hatched",
+        "description": "NS1 + 52 additional amino acids from ribosomal frameshift"
+      }
+    },
+    "NC_001563.1": {
+      "NS1_prime": {
+        "parent_gene": "NS1",
+        "start": "same_as_parent",
+        "end_extension": 156,
+        "frame": -1,
+        "visualization": "hatched",
+        "description": "NS1 + 52 additional amino acids from ribosomal frameshift"
+      }
+    }
+  },
+  "gene_types": {
+    "frameshift": {
+      "color_inherit": true,
+      "transparency": 0.7,
+      "pattern": "hatched",
+      "legend_suffix": " (frameshift)"
+    }
+  }
+}

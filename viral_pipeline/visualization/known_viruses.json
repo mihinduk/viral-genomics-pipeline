@@ -37,29 +37,52 @@
         6915
       ],
       "NS4b": [
-        6916,
-        7671
+        6982,
+        7737
       ],
       "NS5": [
-        7672,
-        10395
+        7738,
+        10461
+      ],
+      "pr": [
+        467,
+        498
+      ],
+      "M": [
+        499,
+        966
+      ],
+      "2K": [
+        6916,
+        6981
+      ],
+      "ancC": [
+        95,
+        96
       ]
     },
     "colors": {
       "C": "#4575b4",
       "prM": "#74add1",
+      "pr": "#6ba3d0",
+      "M": "#74add1",
       "Env": "#abd9e9",
       "NS1": "#fdae61",
       "NS2a": "#f46d43",
       "NS2b": "#d73027",
       "NS3": "#a50026",
       "NS4a": "#762a83",
+      "2K": "#e6f5d0",
       "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
+      "NS5": "#c2a5cf",
+      "ancC": "#2166ac"
     },
     "structural_genes": [
+      "ancC",
       "C",
       "prM",
+      "pr",
+      "M",
       "Env"
     ],
     "nonstructural_genes": [
@@ -68,6 +91,7 @@
       "NS2b",
       "NS3",
       "NS4a",
+      "2K",
       "NS4b",
       "NS5"
     ]
@@ -110,29 +134,52 @@
         6807
       ],
       "NS4b": [
-        6808,
-        7563
+        6874,
+        7629
       ],
       "NS5": [
-        7564,
-        10287
+        7630,
+        10353
+      ],
+      "pr": [
+        359,
+        390
+      ],
+      "M": [
+        391,
+        858
+      ],
+      "2K": [
+        6808,
+        6873
+      ],
+      "ancC": [
+        108,
+        109
       ]
     },
     "colors": {
       "C": "#4575b4",
       "prM": "#74add1",
+      "pr": "#6ba3d0",
+      "M": "#74add1",
       "Env": "#abd9e9",
       "NS1": "#fdae61",
       "NS2a": "#f46d43",
       "NS2b": "#d73027",
       "NS3": "#a50026",
       "NS4a": "#762a83",
+      "2K": "#e6f5d0",
       "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
+      "NS5": "#c2a5cf",
+      "ancC": "#2166ac"
     },
     "structural_genes": [
+      "ancC",
       "C",
       "prM",
+      "pr",
+      "M",
       "Env"
     ],
     "nonstructural_genes": [
@@ -141,6 +188,7 @@
       "NS2b",
       "NS3",
       "NS4a",
+      "2K",
       "NS4b",
       "NS5"
     ]
@@ -150,45 +198,61 @@
     "family": "flavivirus",
     "genome_length": 10723,
     "gene_coords": {
-      "C": [
+      "ancC": [
         95,
         436
       ],
+      "C": [
+        95,
+        394
+      ],
       "prM": [
         437,
-        937
+        934
+      ],
+      "pr": [
+        437,
+        709
+      ],
+      "M": [
+        710,
+        934
       ],
       "Env": [
-        938,
-        2440
+        935,
+        2419
       ],
       "NS1": [
-        2441,
-        3496
+        2420,
+        3475
       ],
       "NS2a": [
-        3497,
-        4189
+        3476,
+        4129
       ],
       "NS2b": [
-        4190,
-        4582
+        4130,
+        4519
       ],
       "NS3": [
-        4583,
-        6439
+        4520,
+        6376
       ],
       "NS4a": [
-        6440,
-        6886
+        6377,
+        6757
+      ],
+      "2K": [
+        6758,
+        6826
       ],
       "NS4b": [
-        6887,
-        7642
+        6827,
+        7573
       ],
       "NS5": [
-        7643,
-        10366
+        7574,
+        10270
       ]
     },
     "colors": {
@@ -201,11 +265,18 @@
       "NS3": "#a50026",
       "NS4a": "#762a83",
       "NS4b": "#9970ab",
-      "NS5": "#c2a5cf"
+      "NS5": "#c2a5cf",
+      "pr": "#6ba3d0",
+      "M": "#74add1",
+      "2K": "#e6f5d0",
+      "ancC": "#2166ac"
     },
     "structural_genes": [
+      "ancC",
       "C",
       "prM",
+      "pr",
+      "M",
       "Env"
     ],
     "nonstructural_genes": [
@@ -214,6 +285,7 @@
       "NS2b",
       "NS3",
       "NS4a",
+      "2K",
       "NS4b",
       "NS5"
     ]
@@ -223,39 +295,103 @@
     "family": "wnv_lineage2",
     "genome_length": 11029,
     "gene_coords": {
-      "anchored_capsid_protein_C": [97, 465],
-      "membrane_glycoprotein_precursor_prM": [466, 966],
-      "protein_pr": [467, 498],
-      "membrane_glycoprotein_M": [499, 966],
-      "envelope_protein_E": [967, 2469],
-      "nonstructural_protein_NS1": [2470, 3525],
-      "nonstructural_protein_NS1_prime": [97, 3671],
-      "nonstructural_protein_NS2A": [3526, 4218],
-      "nonstructural_protein_NS2B": [4219, 4611],
-      "nonstructural_protein_NS3": [4612, 6468],
-      "nonstructural_protein_NS4A": [6469, 6915],
-      "protein_2K": [6916, 6981],
-      "nonstructural_protein_NS4B": [6982, 7680],
-      "nonstructural_protein_NS5": [7681, 10395]
+      "C": [
+        97,
+        465
+      ],
+      "prM": [
+        466,
+        966
+      ],
+      "pr": [
+        467,
+        498
+      ],
+      "M": [
+        499,
+        966
+      ],
+      "Env": [
+        967,
+        2469
+      ],
+      "NS1": [
+        2470,
+        3525
+      ],
+      "NS1_prime": [
+        2470,
+        3681
+      ],
+      "NS2a": [
+        3526,
+        4218
+      ],
+      "NS2b": [
+        4219,
+        4611
+      ],
+      "NS3": [
+        4612,
+        6468
+      ],
+      "NS4a": [
+        6469,
+        6915
+      ],
+      "2K": [
+        6916,
+        6981
+      ],
+      "NS4b": [
+        6982,
+        7680
+      ],
+      "NS5": [
+        7681,
+        10395
+      ],
+      "ancC": [
+        95,
+        96
+      ]
     },
     "colors": {
-      "anchored_capsid_protein_C": "#4575b4",
-      "membrane_glycoprotein_precursor_prM": "#74add1",
-      "protein_pr": "#6ba3d0",
-      "membrane_glycoprotein_M": "#74add1",
-      "envelope_protein_E": "#abd9e9",
-      "nonstructural_protein_NS1": "#fdae61",
-      "nonstructural_protein_NS1_prime": "#A0522D",
-      "nonstructural_protein_NS2A": "#f46d43",
-      "nonstructural_protein_NS2B": "#d73027",
-      "nonstructural_protein_NS3": "#a50026",
-      "nonstructural_protein_NS4A": "#762a83",
-      "protein_2K": "#e6f5d0",
-      "nonstructural_protein_NS4B": "#9970ab",
-      "nonstructural_protein_NS5": "#c2a5cf"
+      "C": "#4575b4",
+      "prM": "#74add1",
+      "pr": "#6ba3d0",
+      "M": "#74add1",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS1_prime": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "2K": "#e6f5d0",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf",
+      "ancC": "#2166ac"
     },
-    "structural_genes": ["anchored_capsid_protein_C", "membrane_glycoprotein_precursor_prM", "protein_pr", "membrane_glycoprotein_M", "envelope_protein_E"],
-    "nonstructural_genes": ["nonstructural_protein_NS1", "nonstructural_protein_NS1_prime", "nonstructural_protein_NS2A", "nonstructural_protein_NS2B", "nonstructural_protein_NS3", "nonstructural_protein_NS4A", "protein_2K", "nonstructural_protein_NS4B", "nonstructural_protein_NS5"]
+    "structural_genes": [
+      "ancC",
+      "C",
+      "prM",
+      "pr",
+      "M",
+      "Env"
+    ],
+    "nonstructural_genes": [
+      "NS1",
+      "NS1_prime",
+      "NS2a",
+      "NS2b",
+      "NS3",
+      "NS4a",
+      "2K",
+      "NS4b",
+      "NS5"
+    ]
   },
   "NC_075022.1": {
     "name": "Venezuelan equine encephalitis virus",
@@ -316,6 +452,103 @@
       "nsP2",
       "nsP3",
       "nsP4"
+    ]
+  },
+  "NC_012532.1": {
+    "name": "Zika virus",
+    "family": "flavivirus",
+    "genome_length": 10794,
+    "gene_coords": {
+      "C": [
+        107,
+        473
+      ],
+      "prM": [
+        474,
+        974
+      ],
+      "Env": [
+        975,
+        2477
+      ],
+      "NS1": [
+        2478,
+        3533
+      ],
+      "NS2a": [
+        3534,
+        4226
+      ],
+      "NS2b": [
+        4227,
+        4619
+      ],
+      "NS3": [
+        4620,
+        6476
+      ],
+      "NS4a": [
+        6477,
+        6923
+      ],
+      "NS4b": [
+        6990,
+        7745
+      ],
+      "NS5": [
+        7746,
+        10469
+      ],
+      "pr": [
+        475,
+        506
+      ],
+      "M": [
+        507,
+        974
+      ],
+      "2K": [
+        6924,
+        6989
+      ],
+      "ancC": [
+        105,
+        106
+      ]
+    },
+    "colors": {
+      "C": "#4575b4",
+      "prM": "#74add1",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf",
+      "pr": "#6ba3d0",
+      "M": "#74add1",
+      "2K": "#e6f5d0",
+      "ancC": "#2166ac"
+    },
+    "structural_genes": [
+      "ancC",
+      "C",
+      "prM",
+      "pr",
+      "M",
+      "Env"
+    ],
+    "nonstructural_genes": [
+      "NS1",
+      "NS2a",
+      "NS2b",
+      "NS3",
+      "NS4a",
+      "2K",
+      "NS4b",
+      "NS5"
     ]
   }
 }

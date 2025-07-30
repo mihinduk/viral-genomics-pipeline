@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys; sys.path.append("viral_pipeline/visualization"); from viral_translator import viral_translate, reverse_complement
 """
 consensus_to_proteins.py
 Generate individual protein FASTA files from a consensus genome sequence
@@ -15,13 +16,16 @@ from Bio.Data import CodonTable
 import re
 
 def parse_genbank_features(gb_file):
+    """Extract CDS or mat_peptide features from GenBank file.
+    For flaviviruses, mat_peptide features contain the individual proteins.
+    For other viruses, CDS features may be used."""
     """Extract CDS features from GenBank file"""
     features = []
     
     with open(gb_file, 'r') as handle:
         for record in SeqIO.parse(handle, "genbank"):
             for feature in record.features:
-                if feature.type == "CDS":
+                if feature.type in ["CDS", "mat_peptide"]:
                     # Get location info
                     start = int(feature.location.start)
                     end = int(feature.location.end)
@@ -72,7 +76,7 @@ def translate_sequence(dna_seq, strand=1):
     if remainder:
         dna_seq = dna_seq[:-remainder]
     
-    return dna_seq.translate()
+    return dna_seq.translate(to_stop=False, gap="-")
 
 def process_polyprotein(features, consensus_seq, prefix, output_dir):
     """Special handling for flavivirus polyprotein"""
