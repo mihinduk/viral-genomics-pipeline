@@ -120,7 +120,7 @@ def main():
     parser.add_argument('--accession', required=True, help='Virus accession number')
     parser.add_argument('--quality', type=float, default=1000, help='Minimum quality score (default: 1000)')
     parser.add_argument('--depth', type=int, default=200, help='Minimum depth (default: 200)')
-    parser.add_argument('--freq', type=float, default=0.05, help='Minimum allele frequency (default: 0.05)')
+    parser.add_argument('--freq', type=float, default=0.01, help='Minimum allele frequency (default: 0.05)')
     parser.add_argument('--output-prefix', required=True, help='Output file prefix')
     parser.add_argument('--mutations-only', action='store_true', help='Only include positions with mutations in output')
     
