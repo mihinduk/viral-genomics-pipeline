@@ -1,7 +1,8 @@
-#\!/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Generate consensus genome and proteins with multi-allelic site handling
-Creates separate consensus sequences for each allele at multi-allelic positions
+Generate consensus genome and proteins with intelligent multi-allelic site handling
+Creates separate sequences only when amino acid changes differ
+Generates comprehensive summary report
 """
 
 import argparse
@@ -12,6 +13,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import json
+from collections import defaultdict
 
 def read_virus_config(accession):
     """Read virus configuration from known_viruses.json"""
@@ -71,11 +73,51 @@ def identify_multiallelic_sites(mutations_df):
                 alleles.append({
                     'alt': mut['ALT'],
                     'freq': mut['Allele_Frequency'],
-                    'mutation': mut
+                    'mutation': mut,
+                    'effect': mut.get('EFFECT', ''),
+                    'hgvsp': mut.get('HGVSp', '')
                 })
             multiallelic[pos] = alleles
     
     return multiallelic
+
+def find_gene_for_position(pos, gene_coords):
+    """Find which gene contains a given position"""
+    for gene, (start, end) in gene_coords.items():
+        if start <= pos <= end:
+            return gene, start, end
+    return None, None, None
+
+def parse_aa_change(hgvsp):
+    """Parse amino acid change from HGVSp annotation"""
+    if not hgvsp or pd.isna(hgvsp):
+        return None, None, None
+    
+    # Handle various formats: p.Leu287Ile, p.L287I, etc
+    import re
+    match = re.search(r'p\.([A-Za-z]+)(\d+)([A-Za-z]+)', hgvsp)
+    if match:
+        ref_aa = match.group(1)
+        position = int(match.group(2))
+        alt_aa = match.group(3)
+        
+        # Convert 3-letter to 1-letter if needed
+        aa_3to1 = {
+            'Ala': 'A', 'Arg': 'R', 'Asn': 'N', 'Asp': 'D', 'Cys': 'C',
+            'Gln': 'Q', 'Glu': 'E', 'Gly': 'G', 'His': 'H', 'Ile': 'I',
+            'Leu': 'L', 'Lys': 'K', 'Met': 'M', 'Phe': 'F', 'Pro': 'P',
+            'Ser': 'S', 'Thr': 'T', 'Trp': 'W', 'Tyr': 'Y', 'Val': 'V',
+            'Ter': '*', 'TER': '*'
+        }
+        
+        if len(ref_aa) > 1:
+            ref_aa = aa_3to1.get(ref_aa, ref_aa)
+        if len(alt_aa) > 1:
+            alt_aa = aa_3to1.get(alt_aa, alt_aa)
+            
+        return ref_aa, position, alt_aa
+    
+    return None, None, None
 
 def apply_mutations_single_sequence(ref_seq, mutations_df, allele_id=""):
     """Apply mutations to single reference sequence"""
@@ -98,8 +140,8 @@ def apply_mutations_single_sequence(ref_seq, mutations_df, allele_id=""):
     print(f"Applied {applied_count} mutations to sequence{allele_suffix}")
     return ''.join(seq_list)
 
-def generate_multiallelic_consensus(ref_seq, mutations_df):
-    """Generate separate consensus sequences for each allele at multi-allelic sites"""
+def generate_multiallelic_consensus(ref_seq, mutations_df, virus_config):
+    """Generate consensus sequences with intelligent multi-allelic handling"""
     multiallelic_sites = identify_multiallelic_sites(mutations_df)
     
     if not multiallelic_sites:
@@ -109,12 +151,37 @@ def generate_multiallelic_consensus(ref_seq, mutations_df):
             'sequence': consensus_seq,
             'mutations': mutations_df,
             'allele_id': '',
-            'total_mutations': len(mutations_df)
+            'total_mutations': len(mutations_df),
+            'multiallelic_info': {}
         }]
     
     print(f"Found multi-allelic sites at positions: {list(multiallelic_sites.keys())}")
     
-    # Generate separate consensus for each allele at multi-allelic sites
+    # Analyze which genes are affected
+    gene_coords = virus_config.get('gene_coords', {}) if virus_config else {}
+    multiallelic_analysis = {}
+    
+    for pos, alleles in multiallelic_sites.items():
+        gene, start, end = find_gene_for_position(pos, gene_coords)
+        aa_changes = []
+        
+        for allele in alleles:
+            ref_aa, aa_pos, alt_aa = parse_aa_change(allele['hgvsp'])
+            aa_change = f"{ref_aa}{aa_pos}{alt_aa}" if ref_aa and alt_aa else "Unknown"
+            aa_changes.append({
+                'nucleotide': f"{pos}>{allele['alt']}",
+                'aa_change': aa_change,
+                'effect': allele['effect'],
+                'freq': allele['freq']
+            })
+        
+        multiallelic_analysis[pos] = {
+            'gene': gene,
+            'aa_changes': aa_changes,
+            'unique_aa_changes': len(set(ch['aa_change'] for ch in aa_changes))
+        }
+    
+    # Generate consensus sequences
     consensus_results = []
     
     for pos, alleles in multiallelic_sites.items():
@@ -132,37 +199,148 @@ def generate_multiallelic_consensus(ref_seq, mutations_df):
                 'sequence': consensus_seq,
                 'mutations': allele_mutations,
                 'allele_id': mut_id,
-                'total_mutations': len(allele_mutations)
+                'total_mutations': len(allele_mutations),
+                'multiallelic_info': multiallelic_analysis
             })
     
     return consensus_results
 
-def translate_genes_with_allele_info(sequence, virus_config, allele_id=""):
-    """Translate sequence to proteins based on gene coordinates"""
-    proteins = {}
+def translate_and_deduplicate_proteins(consensus_results, virus_config, summary_data):
+    """Translate proteins and deduplicate identical sequences"""
+    all_proteins = {}
+    protein_mutation_summary = defaultdict(lambda: defaultdict(list))
     
-    if not virus_config or 'gene_coords' not in virus_config:
-        print("Warning: No gene coordinates available, translating full sequence")
-        seq = Seq(sequence)
-        protein = viral_translate(sequence, coordinates=None, stop_at_stop_codon=True)
-        proteins['Polyprotein'] = str(protein)
-        return proteins
-    
-    # Translate each gene
-    for gene, (start, end) in virus_config['gene_coords'].items():
-        gene_seq = sequence[start-1:end]
-        protein = viral_translate(gene_seq, coordinates=None, stop_at_stop_codon=False)
-        proteins[gene] = {
-            'sequence': protein,
-            'allele_id': allele_id
-        }
+    for result in consensus_results:
+        sequence = result['sequence']
+        allele_id = result['allele_id']
+        mutations = result['mutations']
         
-        print(f"Translated {gene}: {len(protein)} aa [{allele_id}]" if allele_id else f"Translated {gene}: {len(protein)} aa")
+        # Get gene coordinates
+        gene_coords = virus_config.get('gene_coords', {}) if virus_config else {}
+        
+        if not gene_coords:
+            # Translate as single polyprotein
+            protein = viral_translate(sequence, coordinates=None, stop_at_stop_codon=True)
+            key = ('Polyprotein', protein)
+            if key not in all_proteins:
+                all_proteins[key] = {
+                    'sequence': protein,
+                    'allele_ids': [allele_id] if allele_id else [],
+                    'mutations': []
+                }
+            else:
+                if allele_id:
+                    all_proteins[key]['allele_ids'].append(allele_id)
+        else:
+            # Translate each gene
+            for gene, (start, end) in gene_coords.items():
+                gene_seq = sequence[start-1:end]
+                protein = viral_translate(gene_seq, coordinates=None, stop_at_stop_codon=False)
+                
+                # Find mutations in this gene
+                gene_mutations = mutations[(mutations['POS'] >= start) & (mutations['POS'] <= end)]
+                
+                # Parse AA changes for this gene
+                aa_changes = []
+                for _, mut in gene_mutations.iterrows():
+                    ref_aa, aa_pos, alt_aa = parse_aa_change(mut.get('HGVSp', ''))
+                    if ref_aa and alt_aa:
+                        aa_change = f"{ref_aa}{aa_pos}{alt_aa}"
+                        aa_changes.append(aa_change)
+                        protein_mutation_summary[gene][aa_change].append({
+                            'nucleotide': f"{mut['POS']}>{mut['ALT']}",
+                            'effect': mut.get('EFFECT', 'unknown'),
+                            'freq': mut.get('Allele_Frequency', 0)
+                        })
+                
+                # Create unique key for this protein
+                key = (gene, protein, tuple(sorted(aa_changes)))
+                
+                if key not in all_proteins:
+                    all_proteins[key] = {
+                        'sequence': protein,
+                        'allele_ids': [allele_id] if allele_id else [],
+                        'mutations': aa_changes,
+                        'gene': gene
+                    }
+                else:
+                    if allele_id:
+                        all_proteins[key]['allele_ids'].append(allele_id)
     
-    return proteins
+    # Update summary data
+    summary_data['protein_mutation_summary'] = dict(protein_mutation_summary)
+    
+    return all_proteins
+
+def generate_summary_report(summary_data, output_prefix):
+    """Generate comprehensive summary report"""
+    report_file = f"{output_prefix}_summary_report.txt"
+    
+    with open(report_file, 'w') as f:
+        f.write("=" * 80 + "\n")
+        f.write("MULTI-ALLELIC CONSENSUS GENERATION SUMMARY REPORT\n")
+        f.write("=" * 80 + "\n\n")
+        
+        # Basic statistics
+        f.write(f"Total mutations passing filters: {summary_data['total_mutations']}\n")
+        f.write(f"Multi-allelic sites found: {len(summary_data['multiallelic_sites'])}\n")
+        if summary_data['multiallelic_sites']:
+            f.write(f"Multi-allelic positions: {summary_data['multiallelic_sites']}\n")
+        f.write(f"Consensus sequences generated: {summary_data['consensus_count']}\n")
+        f.write(f"Unique protein sequences: {summary_data['unique_proteins']}\n\n")
+        
+        # Multi-allelic site details
+        if summary_data['multiallelic_analysis']:
+            f.write("-" * 80 + "\n")
+            f.write("MULTI-ALLELIC SITE ANALYSIS\n")
+            f.write("-" * 80 + "\n\n")
+            
+            for pos, info in summary_data['multiallelic_analysis'].items():
+                f.write(f"Position {pos} (Gene: {info['gene'] or 'Unknown'}):\n")
+                for change in info['aa_changes']:
+                    f.write(f"  - {change['nucleotide']} → {change['aa_change']} ")
+                    f.write(f"({change['effect']}, freq: {change['freq']:.2%})\n")
+                f.write(f"  Unique amino acid changes: {info['unique_aa_changes']}\n\n")
+        
+        # Protein mutation summary
+        if summary_data['protein_mutation_summary']:
+            f.write("-" * 80 + "\n")
+            f.write("MUTATIONS PER PROTEIN\n")
+            f.write("-" * 80 + "\n\n")
+            
+            for gene, mutations in summary_data['protein_mutation_summary'].items():
+                f.write(f"{gene}:\n")
+                if mutations:
+                    for aa_change, occurrences in mutations.items():
+                        f.write(f"  - {aa_change}:")
+                        for occ in occurrences:
+                            f.write(f" {occ['nucleotide']} ({occ['effect']}, {occ['freq']:.2%})")
+                        f.write("\n")
+                else:
+                    f.write("  No mutations\n")
+                f.write("\n")
+        
+        # Protein deduplication summary
+        if summary_data.get('protein_dedup_info'):
+            f.write("-" * 80 + "\n")
+            f.write("PROTEIN DEDUPLICATION SUMMARY\n")
+            f.write("-" * 80 + "\n\n")
+            
+            for info in summary_data['protein_dedup_info']:
+                f.write(f"{info['gene']}: ")
+                if len(info['allele_ids']) > 1:
+                    f.write(f"Identical protein from {len(info['allele_ids'])} alleles: ")
+                    f.write(f"{', '.join(info['allele_ids'])}\n")
+                else:
+                    f.write(f"Unique protein from {info['allele_ids'][0]}\n")
+                if info['mutations']:
+                    f.write(f"  Mutations: {', '.join(info['mutations'])}\n")
+                f.write("\n")
+    
+    print(f"\n📄 Summary report saved to: {report_file}")
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate consensus genome with multi-allelic handling')
+    parser = argparse.ArgumentParser(description='Generate consensus genome with intelligent multi-allelic handling')
     parser.add_argument('--vcf', required=True, help='Input VCF or filtered TSV file')
     parser.add_argument('--reference', required=True, help='Reference genome FASTA file')
     parser.add_argument('--accession', required=True, help='Virus accession number')
@@ -174,13 +352,24 @@ def main():
     
     args = parser.parse_args()
     
-    print("Multi-Allelic Consensus Generator")
+    print("Multi-Allelic Consensus Generator v2.0")
     print("=" * 50)
     print(f"Reference: {args.reference}")
     print(f"VCF/TSV: {args.vcf}")
     print(f"Quality cutoff: {args.quality}")
     print(f"Depth cutoff: {args.depth}")
     print(f"Frequency cutoff: {args.freq}")
+    
+    # Initialize summary data
+    summary_data = {
+        'total_mutations': 0,
+        'multiallelic_sites': [],
+        'multiallelic_analysis': {},
+        'consensus_count': 0,
+        'unique_proteins': 0,
+        'protein_mutation_summary': {},
+        'protein_dedup_info': []
+    }
     
     # Read reference sequence
     print(f"\nReading reference genome...")
@@ -190,69 +379,87 @@ def main():
     
     # Filter mutations
     filtered_mutations = filter_vcf(args.vcf, args.quality, args.depth, args.freq)
+    summary_data['total_mutations'] = len(filtered_mutations)
     
     if len(filtered_mutations) == 0:
-        print("No mutations pass filtering criteria\!")
+        print("No mutations pass filtering criteria!")
         sys.exit(0)
-    
-    # Generate consensus sequences (one per allele at multi-allelic sites)
-    print(f"\nGenerating consensus sequences...")
-    consensus_results = generate_multiallelic_consensus(ref_seq, filtered_mutations)
     
     # Get virus configuration
     virus_config = read_virus_config(args.accession)
     
-    # Process each consensus sequence
-    all_consensus_records = []
-    all_protein_records = []
+    # Generate consensus sequences
+    print(f"\nGenerating consensus sequences...")
+    consensus_results = generate_multiallelic_consensus(ref_seq, filtered_mutations, virus_config)
+    summary_data['consensus_count'] = len(consensus_results)
     
-    for i, result in enumerate(consensus_results):
-        sequence = result['sequence']
-        allele_id = result['allele_id']
-        total_muts = result['total_mutations']
-        
-        # Create consensus record
-        suffix = f" [{allele_id}]" if allele_id else ""
+    # Extract multi-allelic info for summary
+    if consensus_results[0]['multiallelic_info']:
+        summary_data['multiallelic_sites'] = list(consensus_results[0]['multiallelic_info'].keys())
+        summary_data['multiallelic_analysis'] = consensus_results[0]['multiallelic_info']
+    
+    # Save consensus genomes
+    consensus_records = []
+    for result in consensus_results:
+        suffix = f" [{result['allele_id']}]" if result['allele_id'] else ""
         consensus_record = SeqRecord(
-            Seq(sequence),
+            Seq(result['sequence']),
             id=f"{args.accession}_filtered_consensus",
-            description=f"Consensus with {total_muts} mutations{suffix} (Q>={args.quality}, D>={args.depth}, F>={args.freq})"
+            description=f"Consensus with {result['total_mutations']} mutations{suffix} (Q>={args.quality}, D>={args.depth}, F>={args.freq})"
         )
-        all_consensus_records.append(consensus_record)
-        
-        # Translate to proteins
-        print(f"\nTranslating to proteins{suffix}...")
-        proteins = translate_genes_with_allele_info(sequence, virus_config, allele_id)
-        
-        # Create protein records
-        for gene, protein_info in proteins.items():
-            if isinstance(protein_info, dict):
-                protein_seq = protein_info['sequence']
-                gene_allele_id = protein_info['allele_id']
-                gene_suffix = f" [{gene_allele_id}]" if gene_allele_id else ""
-            else:
-                protein_seq = protein_info
-                gene_suffix = suffix
-            
-            record = SeqRecord(
-                Seq(protein_seq),
-                id=f"{args.accession}_{gene}",
-                description=f"{gene} protein from filtered consensus{gene_suffix}"
-            )
-            all_protein_records.append(record)
+        consensus_records.append(consensus_record)
     
-    # Save all consensus genomes
     consensus_file = f"{args.output_prefix}_consensus.fasta"
-    SeqIO.write(all_consensus_records, consensus_file, "fasta")
-    print(f"\nWrote {len(all_consensus_records)} consensus sequences to: {consensus_file}")
+    SeqIO.write(consensus_records, consensus_file, "fasta")
+    print(f"\nWrote {len(consensus_records)} consensus sequences to: {consensus_file}")
     
-    # Save all proteins
+    # Translate and deduplicate proteins
+    print(f"\nTranslating and deduplicating proteins...")
+    unique_proteins = translate_and_deduplicate_proteins(consensus_results, virus_config, summary_data)
+    summary_data['unique_proteins'] = len(unique_proteins)
+    
+    # Save proteins
+    protein_records = []
+    for (gene_info, protein_seq, mutations), protein_data in unique_proteins.items():
+        gene = protein_data.get('gene', gene_info)
+        
+        # Create description
+        if protein_data['mutations']:
+            mutation_str = ", ".join(protein_data['mutations'])
+            desc = f"{gene} protein [{mutation_str}]"
+        else:
+            desc = f"{gene} protein"
+        
+        # Add allele info if multiple alleles produce same protein
+        if len(protein_data['allele_ids']) > 1:
+            desc += f" (from alleles: {', '.join(protein_data['allele_ids'])})"
+        elif protein_data['allele_ids']:
+            desc += f" (from {protein_data['allele_ids'][0]})"
+        
+        record = SeqRecord(
+            Seq(protein_data['sequence']),
+            id=f"{args.accession}_{gene}",
+            description=desc
+        )
+        protein_records.append(record)
+        
+        # Add to dedup info
+        summary_data['protein_dedup_info'].append({
+            'gene': gene,
+            'allele_ids': protein_data['allele_ids'],
+            'mutations': protein_data['mutations']
+        })
+    
     protein_file = f"{args.output_prefix}_proteins.fasta"
-    SeqIO.write(all_protein_records, protein_file, "fasta")
-    print(f"Wrote {len(all_protein_records)} protein sequences to: {protein_file}")
+    SeqIO.write(protein_records, protein_file, "fasta")
+    print(f"Wrote {len(protein_records)} unique protein sequences to: {protein_file}")
     
-    print(f"\n✅ Multi-allelic consensus generation complete\!")
-    print(f"Generated {len(consensus_results)} consensus sequences from multi-allelic sites")
+    # Generate summary report
+    generate_summary_report(summary_data, args.output_prefix)
+    
+    print(f"\n✅ Multi-allelic consensus generation complete!")
+    print(f"Generated {len(consensus_results)} consensus sequences")
+    print(f"Generated {len(unique_proteins)} unique proteins")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,84 @@
+================================================================================
+MULTI-ALLELIC CONSENSUS GENERATION SUMMARY REPORT
+================================================================================
+
+Total mutations passing filters: 5
+Multi-allelic sites found: 2
+Multi-allelic positions: [100, 17937]
+Consensus sequences generated: 4
+Unique protein sequences: 18
+
+--------------------------------------------------------------------------------
+MULTI-ALLELIC SITE ANALYSIS
+--------------------------------------------------------------------------------
+
+Position 100 (Gene: ancC):
+  - 100>T → A1T (missense_variant, freq: 30.00%)
+  - 100>G → A1G (missense_variant, freq: 25.00%)
+  Unique amino acid changes: 2
+
+Position 17937 (Gene: Unknown):
+  - 17937>A → L287I (missense_variant, freq: 40.00%)
+  - 17937>C → L287L (synonymous_variant, freq: 35.00%)
+  Unique amino acid changes: 2
+
+--------------------------------------------------------------------------------
+MUTATIONS PER PROTEIN
+--------------------------------------------------------------------------------
+
+ancC:
+  - L2L: 200>A (synonymous_variant, 15.00%) 200>A (synonymous_variant, 15.00%) 200>A (synonymous_variant, 15.00%) 200>A (synonymous_variant, 15.00%)
+  - A1T: 100>T (missense_variant, 30.00%) 100>T (missense_variant, 30.00%) 100>T (missense_variant, 30.00%)
+  - A1G: 100>G (missense_variant, 25.00%) 100>G (missense_variant, 25.00%) 100>G (missense_variant, 25.00%)
+
+C:
+  - L2L: 200>A (synonymous_variant, 15.00%) 200>A (synonymous_variant, 15.00%) 200>A (synonymous_variant, 15.00%) 200>A (synonymous_variant, 15.00%)
+  - A1T: 100>T (missense_variant, 30.00%) 100>T (missense_variant, 30.00%) 100>T (missense_variant, 30.00%)
+  - A1G: 100>G (missense_variant, 25.00%) 100>G (missense_variant, 25.00%) 100>G (missense_variant, 25.00%)
+
+--------------------------------------------------------------------------------
+PROTEIN DEDUPLICATION SUMMARY
+--------------------------------------------------------------------------------
+
+ancC: Unique protein from 100>T
+  Mutations: L2L, A1T
+
+C: Unique protein from 100>T
+  Mutations: L2L, A1T
+
+prM: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+pr: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+M: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+Env: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS1: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS2a: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS2b: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS3: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS4a: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+2K: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS4b: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+NS5: Identical protein from 4 alleles: 100>T, 100>G, 17937>A, 17937>C
+
+ancC: Unique protein from 100>G
+  Mutations: L2L, A1G
+
+C: Unique protein from 100>G
+  Mutations: L2L, A1G
+
+ancC: Identical protein from 2 alleles: 17937>A, 17937>C
+  Mutations: A1T, A1G, L2L
+
+C: Identical protein from 2 alleles: 17937>A, 17937>C
+  Mutations: A1T, A1G, L2L
+
