@@ -1,0 +1,6 @@
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	Allele_Frequency	Total_Depth	EFFECT	ANNOTATION	HGVSp
+NC_001477.1	100	.	A	T	5000	PASS	.	0.30	300	missense_variant	test1	p.Ala1Thr
+NC_001477.1	100	.	A	G	5000	PASS	.	0.25	300	missense_variant	test2	p.Ala1Gly
+NC_001477.1	200	.	C	A	6000	PASS	.	0.15	400	synonymous_variant	test3	p.Leu2Leu
+NC_001477.1	17937	.	T	A	7000	PASS	.	0.40	500	missense_variant	test4	p.Leu287Ile
+NC_001477.1	17937	.	T	C	7000	PASS	.	0.35	500	synonymous_variant	test5	p.Leu287Leu
