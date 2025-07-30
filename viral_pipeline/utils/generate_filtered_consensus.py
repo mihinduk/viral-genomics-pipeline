@@ -5,6 +5,7 @@ Filters mutations by quality, depth, and frequency before applying to reference
 """
 
 import argparse
+import sys; sys.path.append("viral_pipeline/visualization"); from viral_translator import viral_translate
 import sys
 from pathlib import Path
 import pandas as pd
@@ -96,7 +97,7 @@ def translate_genes(sequence, virus_config):
         print("Warning: No gene coordinates available, translating full sequence")
         # Translate as single polyprotein
         seq = Seq(sequence)
-        protein = seq.translate(to_stop=True)
+        protein = viral_translate(sequence, coordinates=None, stop_at_stop_codon=True)
         proteins['Polyprotein'] = str(protein)
         return proteins
     
@@ -105,18 +106,9 @@ def translate_genes(sequence, virus_config):
         # Extract gene sequence (coordinates are 1-based)
         gene_seq = sequence[start-1:end]
         
-        # Find the first start codon
-        start_pos = 0
-        for i in range(0, len(gene_seq)-2, 3):
-            if gene_seq[i:i+3] in ['ATG', 'CTG', 'TTG', 'GTG']:
-                start_pos = i
-                break
-        
-        # Translate from start codon
-        gene_seq_from_start = gene_seq[start_pos:]
-        seq = Seq(gene_seq_from_start)
-        protein = seq.translate(to_stop=True)
-        proteins[gene] = str(protein)
+        # Use custom viral translator - NO start codon detection!
+        protein = viral_translate(gene_seq, coordinates=None, stop_at_stop_codon=False)
+        proteins[gene] = protein
         
         print(f"Translated {gene}: {len(protein)} aa")
     
