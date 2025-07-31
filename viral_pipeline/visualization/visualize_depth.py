@@ -95,7 +95,7 @@ except ImportError:
 # Import gene name mapper for standardized display names
 try:
     from gene_name_mapper import GeneNameMapper
-    gene_mapper = GeneNameMapper()
+    gene_mapper = None  # Disabled to use JSON colors
 except ImportError:
     print("Warning: Gene name mapper not available, using full names")
     gene_mapper = None
@@ -304,8 +304,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
             # Use mapped_colors to ensure consistency with gene track and legend
             color = gene_colors.get(gene, '#808080')
             display_name = display_names.get(gene, gene)
-            ax_depth.fill_between(gene_positions, 0, gene_depths, 
-                                color=color, alpha=0.7, label=display_name)
+# Skip prM from legend (it will be added as hatched overlay)            label = None if gene == "prM" else display_name            ax_depth.fill_between(gene_positions, 0, gene_depths,                                 color=color, alpha=0.7, label=label)
     
     # Add the line plot on top
     ax_depth.plot(positions, depths_plot, color='black', linewidth=0.5, alpha=0.8)
@@ -395,6 +394,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         
         custom_labels.append(label)
     
+# Add custom prM entry to legend (hatched, no color)    if "prM" in gene_coords:        prm_handle = Rectangle((0, 0), 1, 1, facecolor="none", edgecolor="black", hatch="///", linewidth=0.5)        custom_handles.append(prm_handle)        custom_labels.append("prM")
     ax_depth.legend(custom_handles, custom_labels)
     
     # Calculate and display statistics
