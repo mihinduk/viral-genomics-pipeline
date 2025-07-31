@@ -281,11 +281,11 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     # Define genes that need label offsetting for flaviviruses
     offset_genes = {
         'anchored_capsid_protein_ancC': {'offset_x': -15, 'offset_y': -0.02, 'fontsize': 7},  # ancC above and left
-        'capsid_protein_C': {'offset_x': 200, 'offset_y': 0.1, 'fontsize': 9},  # C moved further right to center of gray bar between ancC and pr
+        'capsid_protein_C': {'offset_x': 165, 'offset_y': 0, 'fontsize': 9},  # C moved further right to center of gray bar between ancC and pr
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},  # M same size as E, horizontally aligned
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},  # pr above and left
-        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.1, 'fontsize': 6},  # prM below and right
-        'protein_2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 7},  # 2K above
+        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},  # prM below and right
+        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},  # 2K above
         'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}  # NS4A below
     }
     

@@ -357,8 +357,8 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         if original_gene:
             # Find overlapping genes first to properly detect pr as frameshift
             overlapping_genes_for_legend = find_overlapping_genes(gene_coords)
-            # Handle various pr gene naming patterns: "pr", "pr", etc.
-            is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "pr" in original_gene.lower())
+            # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+            is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "protein_pr" in original_gene.lower())
             is_frameshift = ("'" in original_gene or "'" in label or "prime" in original_gene.lower() or "prime" in label.lower() or 
                            (is_pr_gene_legend and original_gene in overlapping_genes_for_legend))
             
@@ -399,14 +399,14 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'C': {'offset_x': 150, 'offset_y': 0.15, 'fontsize': 9},
-        'M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprecursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 6},
-        '2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 7},
-        'NS4a': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
+        'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
+        'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
+        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
+        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
+        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
+        'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
     }
     
     # Find overlapping genes
@@ -443,8 +443,8 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         
         # Check if this is a frameshift gene (contains "prime" in name or display name)
         # Also treat 'pr' as a frameshift gene when it overlaps with other genes
-        # Handle various pr gene naming patterns: "pr", "pr", etc.
-        is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "pr" in gene.lower())
+        # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+        is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "protein_pr" in gene.lower())
         is_frameshift = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or 
                         (is_pr_gene and gene in overlapping_genes))
         

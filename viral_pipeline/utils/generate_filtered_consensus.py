@@ -332,8 +332,6 @@ def generate_summary_report(summary_data, output_prefix):
                 f.write(f"{info['gene']}: ")
                 if len(info['allele_ids']) > 1:
                     f.write(f"Identical protein from {len(info['allele_ids'])} alleles: ")
-                    f.write(f"{', '.join(info['allele_ids'])}\n")
-                else:
                     f.write(f"Unique protein from {info['allele_ids'][0]}\n")
                 if info['mutations']:
                     f.write(f"  Mutations: {', '.join(info['mutations'])}\n")
