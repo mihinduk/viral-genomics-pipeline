@@ -347,14 +347,14 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     ax_depth.grid(True, alpha=0.3)
     # Order legend by genomic position
     handles, labels = ax_depth.get_legend_handles_labels()
-    # Create a mapping of labels to their genomic start positions
+    # Create a mapping of labels to their genomic positions (start, end)
     label_positions = {}
     for gene, (start, end) in gene_coords.items():
         display_name = display_names.get(gene, gene)
-        label_positions[display_name] = start
+        label_positions[display_name] = (start, end)
     
-    # Sort handles and labels by genomic position
-    sorted_pairs = sorted(zip(handles, labels), key=lambda x: label_positions.get(x[1], float('inf')))
+    # Sort handles and labels by genomic position (start, then end)
+    sorted_pairs = sorted(zip(handles, labels), key=lambda x: label_positions.get(x[1], (float("inf"), float("inf"))))
     sorted_handles, sorted_labels = zip(*sorted_pairs) if sorted_pairs else ([], [])
     
     # Create custom legend handles for frameshift genes
