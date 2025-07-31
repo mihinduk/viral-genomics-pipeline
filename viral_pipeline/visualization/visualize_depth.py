@@ -399,11 +399,15 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
+        # Also add standardized gene names
+        "C": {"offset_x": 200, "offset_y": 0.15, "fontsize": 10},
+        "prM": {"offset_x": -50, "offset_y": 0.02, "fontsize": 10},
+        "2K": {"offset_x": 0, "offset_y": 0.1, "fontsize": 10},
+        'capsid_protein_C': {'offset_x': 200, 'offset_y': 0.15, 'fontsize': 9},
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 10},
-        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 10},
-        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 10},
+        'membrane_glycoprotein_precursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 10},
+        'protein_2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 10},
         'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 10},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
