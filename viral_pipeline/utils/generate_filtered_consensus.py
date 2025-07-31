@@ -435,7 +435,18 @@ def main():
     
     # Save proteins
     protein_records = []
-    for (gene_info, protein_seq, mutations), protein_data in unique_proteins.items():
+    for key, protein_data in unique_proteins.items():
+        # Handle both polyprotein (2 elements) and gene-specific (3 elements) keys
+        if len(key) == 2:
+            # Polyprotein case: (gene_name, protein_seq)
+            gene_info, protein_seq = key
+            mutations = tuple()  # No mutations for polyprotein
+        elif len(key) == 3:
+            # Gene-specific case: (gene_name, protein_seq, mutations_tuple)
+            gene_info, protein_seq, mutations = key
+        else:
+            print(f"Warning: Unexpected key format: {key}")
+            continue
         gene = protein_data.get('gene', gene_info)
         
         # Create description
