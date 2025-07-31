@@ -7,6 +7,42 @@ Designed for M2 Mac compatibility and ease of use for bench scientists.
 """
 
 import argparse
+import requests
+import json
+import os
+from datetime import datetime
+
+def download_virus_configs():
+    """Download the latest virus configuration file from GitHub for QC tracking"""
+    config_url = "https://raw.githubusercontent.com/mihinduk/viral-genomics-pipeline/main/virus_configs/known_viruses.json"
+    
+    try:
+        print("📥 Downloading latest virus configuration...")
+        response = requests.get(config_url, timeout=30)
+        response.raise_for_status()
+        
+        # Create virus_configs directory if it doesnt exist
+        os.makedirs("virus_configs", exist_ok=True)
+        
+        # Save with timestamp for QC tracking
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        config_file = f"virus_configs/known_viruses_{timestamp}.json"
+        
+        with open(config_file, "w") as f:
+            f.write(response.text)
+        
+        # Also save as the main config file
+        with open("virus_configs/known_viruses.json", "w") as f:
+            f.write(response.text)
+            
+        print(f"✅ Virus configuration downloaded and saved to {config_file}")
+        return json.loads(response.text)
+        
+    except Exception as e:
+        print(f"⚠️  Failed to download virus config: {e}")
+        print("   Falling back to local configuration if available...")
+        return None
+
 
 # Import gene name mapper for standardized display names
 try:
@@ -16,84 +52,63 @@ except ImportError:
     print("Warning: Gene name mapper not available, using full names")
     gene_mapper = None
 
-# Use dynamic virus configuration if available
+# Load virus configurations with GitHub download
+KNOWN_VIRUSES = {}
 try:
-    from virus_config_framework import VirusConfigManager
-    vcm = VirusConfigManager()
-    # Test if it can actually load data properly
-    test_info = vcm.get_virus_info('NC_075022.1')
-    if not test_info.get('colors') or len(test_info.get('gene_coords', {})) < 5:
-        # Framework is not working properly, fall back to simple manager
-        raise ImportError('Framework not loading proper data')
-    
-    def get_virus_name(accession):
-        info = vcm.get_virus_info(accession)
-        return info.get("name", f"Unknown virus ({accession})")
-    
-    def get_gene_info(accession):
-        info = vcm.get_virus_info(accession)
-        gene_coords = info.get("gene_coords", {})
-        colors = info.get("colors", {})
-        
-        # Apply gene name mapping if available
-        if gene_mapper:
-            family = info.get("family", "flavivirus")
-            display_names = {}
-            mapped_colors = {}
-            for gene in gene_coords:
-                display_name = gene_mapper.get_display_name(gene, family)
-                display_names[gene] = display_name
-                # Get standardized color
-                mapped_colors[gene] = gene_mapper.get_gene_color(gene, family)
-        else:
-            display_names = {gene: gene for gene in gene_coords}
-            mapped_colors = colors
-            
-        return (gene_coords, 
-                mapped_colors,
-                info.get("structural_genes", []),
-                info.get("nonstructural_genes", []),
-                display_names)
-    
-    print("Using dynamic virus configuration framework")
-except ImportError:
-    try:
-        from virus_config_simple import simple_virus_manager
-        
-        def get_virus_name(accession):
-            info = simple_virus_manager.get_virus_info(accession)
-            return info.get("name", f"Unknown virus ({accession})")
-        
-        def get_gene_info(accession):
-            info = simple_virus_manager.get_virus_info(accession)
-            gene_coords = info.get("gene_coords", {})
-            colors = info.get("colors", {})
-            
-            # Apply gene name mapping if available
-            if gene_mapper:
-                family = info.get("family", "flavivirus")
-                display_names = {}
-                mapped_colors = {}
-                for gene in gene_coords:
-                    display_name = gene_mapper.get_display_name(gene, family)
-                    display_names[gene] = display_name
-                    # Get standardized color
-                    mapped_colors[gene] = gene_mapper.get_gene_color(gene, family)
-            else:
-                display_names = {gene: gene for gene in gene_coords}
-                mapped_colors = colors
-                
-            return (gene_coords, 
-                    mapped_colors,
-                    info.get("structural_genes", []),
-                    info.get("nonstructural_genes", []),
-                    display_names)
-        
-        print("Using simple virus configuration manager")
-    except ImportError:
-        from quick_virus_fix import get_virus_name, get_gene_info
-        print("Using quick fix virus configuration")
+    # First try to download the latest config
+    downloaded_config = download_virus_configs()
+    if downloaded_config:
+        KNOWN_VIRUSES = downloaded_config
+    else:
+        # Fall back to local file
+        try:
+            with open('virus_configs/known_viruses.json', 'r') as f:
+                KNOWN_VIRUSES = json.load(f)
+            print('📁 Using local virus configuration')
+        except:
+            # Final fallback to root directory
+            try:
+                with open('known_viruses.json', 'r') as f:
+                    KNOWN_VIRUSES = json.load(f)
+                print('📁 Using root directory virus configuration')
+            except:
+                print('⚠️  No virus configuration found')
+                KNOWN_VIRUSES = {}
+except Exception as e:
+    print(f'⚠️  Error loading virus configuration: {e}')
+    KNOWN_VIRUSES = {}
 
+# Define configuration functions using the downloaded config
+def get_virus_name(accession):
+    info = KNOWN_VIRUSES.get(accession, {})
+    return info.get('name', f'Unknown virus ({accession})')
+
+def get_gene_info(accession):
+    info = KNOWN_VIRUSES.get(accession, {})
+    gene_coords = info.get('gene_coords', {})
+    colors = info.get('colors', {})
+    
+    # Apply gene name mapping if available
+    if gene_mapper:
+        family = info.get('family', 'flavivirus')
+        display_names = {}
+        mapped_colors = {}
+        for gene in gene_coords:
+            display_name = gene_mapper.get_display_name(gene, family)
+            display_names[gene] = display_name
+            # Get standardized color
+            mapped_colors[gene] = gene_mapper.get_gene_color(gene, family)
+    else:
+        display_names = {gene: gene for gene in gene_coords}
+        mapped_colors = colors
+        
+    return (gene_coords, 
+            mapped_colors,
+            info.get('structural_genes', []),
+            info.get('nonstructural_genes', []),
+            display_names)
+
+print('Using downloaded virus configuration')
 import sys
 import os
 from pathlib import Path
