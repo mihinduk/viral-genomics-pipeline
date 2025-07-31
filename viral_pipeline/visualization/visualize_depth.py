@@ -399,14 +399,14 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'C': {'offset_x': 150, 'offset_y': 0.15, 'fontsize': 9},
-        'M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprecursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 6},
-        '2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 7},
-        'NS4a': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
-        'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
+        'C': {'offset_x': 150, 'offset_y': 0.15, 'fontsize': 10},
+        'M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 10},
+        'pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 10},
+        'membrane_glycoprecursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 10},
+        '2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 10},
+        'NS4a': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 10},
+        'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 10},
+        'NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 10}
     }
     
     # Find overlapping genes
