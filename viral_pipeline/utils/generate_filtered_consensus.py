@@ -449,7 +449,7 @@ def main():
         
         # Add allele info if multiple alleles produce same protein
         if len(protein_data['allele_ids']) > 1:
-            desc += f" (from alleles: {', '.join(protein_data['allele_ids'])})"
+            desc += f" (quasispecies: {', '.join(protein_data['allele_ids'])})"
         elif protein_data['allele_ids']:
             desc += f" (from {protein_data['allele_ids'][0]})"
         
