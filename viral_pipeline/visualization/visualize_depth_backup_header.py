@@ -189,30 +189,7 @@ def extract_depth_from_bam(bam_file, output_file=None):
 def read_depth_file(depth_file):
     """Read depth file created by samtools depth"""
     print(f"📖 Reading depth file: {depth_file}")
-    # Try reading without header first (samtools depth format)
-    try:
-        df = pd.read_csv(depth_file, sep="	", header=None, names=["reference", "position", "depth"], dtype={"position": int, "depth": int}, comment="#")
-    except (ValueError, TypeError):
-        # If that fails, try with header (some tools add headers)
-        print("   Detected header in depth file, reading with header...")
-        df = pd.read_csv(depth_file, sep="	", dtype={"position": int, "depth": int}, comment="#")
-        # Ensure we have the right column names
-        expected_cols = ["reference", "position", "depth"]
-        if list(df.columns) != expected_cols:
-            # Try to map common column names
-            col_mapping = {}
-            for col in df.columns:
-                if "ref" in col.lower() or "chrom" in col.lower():
-                    col_mapping[col] = "reference"
-                elif "pos" in col.lower():
-                    col_mapping[col] = "position"
-                elif "depth" in col.lower() or "cov" in col.lower():
-                    col_mapping[col] = "depth"
-            if col_mapping:
-                df = df.rename(columns=col_mapping)
-            # Make sure we have all required columns
-            if "reference" not in df.columns or "position" not in df.columns or "depth" not in df.columns:
-                raise ValueError(f"Could not find required columns in depth file. Found: {list(df.columns)}")
+    df = pd.read_csv(depth_file, sep='\t', header=None, names=['reference', 'position', 'depth'], dtype={'position': int, 'depth': int}, comment='#')
     print(f"   Found {len(df)} positions")
     return df
 
