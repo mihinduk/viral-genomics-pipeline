@@ -376,7 +376,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
             # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
             is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "protein_pr" in original_gene.lower())
             is_frameshift = ("'" in original_gene or "'" in label or "prime" in original_gene.lower() or "prime" in label.lower() or 
-                           (is_pr_gene_legend and original_gene in overlapping_genes_for_legend))
+                           False)
             
             # Debug: Print legend frameshift detection
             if is_pr_gene_legend or "'" in original_gene or "prime" in original_gene.lower():
@@ -466,7 +466,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
         is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "protein_pr" in gene.lower())
         is_frameshift = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or 
-                        (is_pr_gene and gene in overlapping_genes))
+                        False)
         
         # Debug: Print frameshift detection for each gene
         if is_pr_gene or "'" in gene or "prime" in gene.lower():
