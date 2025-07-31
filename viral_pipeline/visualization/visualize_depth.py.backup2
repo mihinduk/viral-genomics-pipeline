@@ -15,9 +15,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import subprocess
 import warnings
-import requests
-import json
-from datetime import datetime
 try:
     from virus_config_framework import VirusConfigManager
     vcm = VirusConfigManager()
@@ -127,61 +124,11 @@ def constrain_figure_size(width, height, max_pixels=30000):
     return width, height
 
 # Load known virus configurations
-def download_virus_configs():
-    """Download the latest virus configuration file from GitHub for QC tracking"""
-    config_url = "https://raw.githubusercontent.com/mihinduk/viral-genomics-pipeline/main/virus_configs/known_viruses.json"
-    
-    try:
-        print("📥 Downloading latest virus configuration...")
-        response = requests.get(config_url, timeout=30)
-        response.raise_for_status()
-        
-        # Create virus_configs directory if it doesn't exist
-        os.makedirs('virus_configs', exist_ok=True)
-        
-        # Save with timestamp for QC tracking
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        config_file = f'virus_configs/known_viruses_{timestamp}.json'
-        
-        with open(config_file, 'w') as f:
-            f.write(response.text)
-        
-        # Also save as the main config file
-        with open('virus_configs/known_viruses.json', 'w') as f:
-            f.write(response.text)
-            
-        print(f"✅ Virus configuration downloaded and saved to {config_file}")
-        return json.loads(response.text)
-        
-    except Exception as e:
-        print(f"⚠️  Failed to download virus config: {e}")
-        print("   Falling back to local configuration if available...")
-        return None
-
-# Try to load virus configurations
-KNOWN_VIRUSES = {}
+import json
 try:
-    # First try to download the latest config
-    downloaded_config = download_virus_configs()
-    if downloaded_config:
-        KNOWN_VIRUSES = downloaded_config
-    else:
-        # Fall back to local file
-        try:
-            with open('virus_configs/known_viruses.json', 'r') as f:
-                KNOWN_VIRUSES = json.load(f)
-            print("📁 Using local virus configuration")
-        except:
-            # Final fallback to root directory
-            try:
-                with open('known_viruses.json', 'r') as f:
-                    KNOWN_VIRUSES = json.load(f)
-                print("📁 Using root directory virus configuration")
-            except:
-                print("⚠️  No virus configuration found")
-                KNOWN_VIRUSES = {}
-except Exception as e:
-    print(f"⚠️  Error loading virus configuration: {e}")
+    with open('virus_configs/known_viruses.json', 'r') as f:
+        KNOWN_VIRUSES = json.load(f)
+except:
     KNOWN_VIRUSES = {}
 
 
@@ -250,12 +197,12 @@ def read_depth_file(depth_file):
     # Check if first line starts with 'chrom' (header)
     if first_line.startswith('chrom'):
         # Skip header line
-        df = pd.read_csv(depth_file, sep="\t", header=0, 
+        df = pd.read_csv(depth_file, sep="	", header=0, 
                          names=["reference", "position", "depth"],
                          dtype={"position": int, "depth": int})
     else:
         # No header, read directly
-        df = pd.read_csv(depth_file, sep="\t", header=None, 
+        df = pd.read_csv(depth_file, sep="	", header=None, 
                          names=["reference", "position", "depth"],
                          dtype={"position": int, "depth": int})
     
@@ -349,10 +296,6 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Then overlay gene-colored regions
     for gene, (start, end) in gene_coords.items():
-        # Skip NS1' in depth coloring - it's only shown as hatching
-        if gene == "NS1'" or gene == "nonstructural_protein_NS1_prime":
-            continue
-            
         # Find positions within this gene
         gene_mask = (positions >= start) & (positions <= end)
         if np.any(gene_mask):
@@ -360,9 +303,6 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
             gene_depths = depths_plot[gene_mask]
             # Use mapped_colors to ensure consistency with gene track and legend
             color = gene_colors.get(gene, '#808080')
-            # Skip transparent colors
-            if color == 'transparent' or color == 'none':
-                continue
             display_name = display_names.get(gene, gene)
             ax_depth.fill_between(gene_positions, 0, gene_depths, 
                                 color=color, alpha=0.7, label=display_name)
@@ -431,13 +371,18 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
                 break
         
         if original_gene:
-            # Check if this is NS1' - the ONLY gene that should appear as transparent hatched in legend
-            is_frameshift = (original_gene == "NS1'" or original_gene == "nonstructural_protein_NS1_prime" or 
-                           label == "NS1'" or "NS1'" in original_gene)
+            # Find overlapping genes first to properly detect pr as frameshift
+            overlapping_genes_for_legend = find_overlapping_genes(gene_coords)
+            # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+            is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "protein_pr" in original_gene.lower())
+            is_frameshift = ("'" in original_gene or "'" in label or "prime" in original_gene.lower() or "prime" in label.lower() or 
+                           (is_pr_gene_legend and original_gene in overlapping_genes_for_legend))
             
             # Debug: Print legend frameshift detection
-            if "'" in original_gene or "prime" in original_gene.lower():
-                print(f"DEBUG LEGEND: Gene '{original_gene}' (label: '{label}') - is_frameshift: {is_frameshift}")
+            if is_pr_gene_legend or "'" in original_gene or "prime" in original_gene.lower():
+                print(f"DEBUG LEGEND: Gene '{original_gene}' (label: '{label}'):")
+                print(f"  - Is pr gene: {is_pr_gene_legend}")
+                print(f"  - Legend is_frameshift: {is_frameshift}")
             
             if is_frameshift:
                 # Create custom handle for frameshift genes - transparent with hatching
@@ -470,12 +415,16 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
+        # Also add standardized gene names
+        "C": {"offset_x": 200, "offset_y": 0.15, "fontsize": 10},
+        "prM": {"offset_x": -50, "offset_y": 0.02, "fontsize": 10},
+        "2K": {"offset_x": 0, "offset_y": 0.1, "fontsize": 10},
+        'capsid_protein_C': {'offset_x': 200, 'offset_y': 0.15, 'fontsize': 9},
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
-        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
-        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
+        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 10},
+        'membrane_glycoprotein_precursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 10},
+        'protein_2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 10},
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 10},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
     }
@@ -512,13 +461,24 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         color = gene_colors.get(gene, '#808080')
         display_name = display_names.get(gene, gene)
         
-        # Check if this is NS1' - the ONLY frameshift gene that should have transparent hatching
-        is_frameshift = (gene == "NS1'" or gene == "nonstructural_protein_NS1_prime" or 
-                        display_name == "NS1'" or "NS1'" in gene)
+        # Check if this is a frameshift gene (contains "prime" in name or display name)
+        # Also treat 'pr' as a frameshift gene when it overlaps with other genes
+        # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+        is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "protein_pr" in gene.lower())
+        is_frameshift = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or 
+                        (is_pr_gene and gene in overlapping_genes))
         
-        # Debug: Print frameshift detection for NS1'
-        if "'" in gene or "prime" in gene.lower() or is_frameshift:
-            print(f"DEBUG: Gene '{gene}' (display: '{display_name}') - is_frameshift: {is_frameshift}")
+        # Debug: Print frameshift detection for each gene
+        if is_pr_gene or "'" in gene or "prime" in gene.lower():
+            print(f"DEBUG: Gene '{gene}' (display: '{display_name}'):")
+            print(f"  - Contains prime in gene: {'prime' in gene.lower()}")
+            print(f"  - Contains prime in display: {'prime' in display_name.lower()}")
+            apostrophe_char = "'"
+            print(f"  - Contains apostrophe in gene: {apostrophe_char in gene}")
+            print(f"  - Contains apostrophe in display: {apostrophe_char in display_name}")
+            print(f"  - Is pr gene: {is_pr_gene}")
+            print(f"  - Is pr and overlapping: {is_pr_gene and gene in overlapping_genes}")
+            print(f"  - Final is_frameshift: {is_frameshift}")
         
         # Handle frameshift genes with overlapping regions
         if is_frameshift and gene in overlapping_genes:
@@ -579,7 +539,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         # Skip labels for frameshift genes (they should only appear in legend)
         # Include pr genes that are frameshifts in the skip logic
         skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or
-                     (is_pr_gene and gene in overlapping_genes and is_frameshift))
+                     (is_pr_gene and gene in overlapping_genes and is_frameshift) or "UTR" in gene)
         
         if not skip_label:
             # Add gene label using display name with offset handling
@@ -607,6 +567,13 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
                          fontsize=font_size, fontweight='bold', color=text_color)
     
     # Configure gene track
+    # Add prM as hatched overlay if it exists
+    if "prM" in gene_coords:
+        prm_start, prm_end = gene_coords["prM"]
+        prm_rect = Rectangle((prm_start, 0.25), prm_end - prm_start, 0.5,
+                           facecolor="none", edgecolor="black", linewidth=0.5, hatch="///")
+        ax_genes.add_patch(prm_rect)
+
     ax_genes.set_xlabel('Genome Position', fontsize=12)
     ax_genes.set_ylabel('Genes', fontsize=12)
     ax_genes.set_yticks([])
@@ -788,8 +755,9 @@ def main():
             output_file=output_file
         )
         
-        # Always save HTML version
-        save_html_plot(fig, html_file)
+        # Save HTML if requested
+        if args.output_html or args.outdir:
+            save_html_plot(fig, html_file)
         
         # Print statistics
         print("\n📊 Coverage Statistics:")

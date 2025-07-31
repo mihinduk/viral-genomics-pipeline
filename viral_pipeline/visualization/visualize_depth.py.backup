@@ -189,7 +189,7 @@ def extract_depth_from_bam(bam_file, output_file=None):
 def read_depth_file(depth_file):
     """Read depth file created by samtools depth"""
     print(f"📖 Reading depth file: {depth_file}")
-    df = pd.read_csv(depth_file, sep='\t', header=0, dtype={'depth': int}, comment='#')
+    df = pd.read_csv(depth_file, sep="	", header=None, names=["reference", "position", "depth"], dtype={"position": int, "depth": int}, comment="#chrom")
     print(f"   Found {len(df)} positions")
     return df
 
@@ -399,12 +399,16 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
+        # Also add standardized gene names
+        "C": {"offset_x": 200, "offset_y": 0.15, "fontsize": 10},
+        "prM": {"offset_x": -50, "offset_y": 0.02, "fontsize": 10},
+        "2K": {"offset_x": 0, "offset_y": 0.1, "fontsize": 10},
+        'capsid_protein_C': {'offset_x': 200, 'offset_y': 0.15, 'fontsize': 9},
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
-        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
-        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
+        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 10},
+        'membrane_glycoprotein_precursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 10},
+        'protein_2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 10},
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 10},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
     }
@@ -519,7 +523,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         # Skip labels for frameshift genes (they should only appear in legend)
         # Include pr genes that are frameshifts in the skip logic
         skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or
-                     (is_pr_gene and gene in overlapping_genes and is_frameshift))
+                     (is_pr_gene and gene in overlapping_genes and is_frameshift) or "UTR" in gene)
         
         if not skip_label:
             # Add gene label using display name with offset handling
@@ -547,6 +551,13 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
                          fontsize=font_size, fontweight='bold', color=text_color)
     
     # Configure gene track
+    # Add prM as hatched overlay if it exists
+    if "prM" in gene_coords:
+        prm_start, prm_end = gene_coords["prM"]
+        prm_rect = Rectangle((prm_start, 0.25), prm_end - prm_start, 0.5,
+                           facecolor="none", edgecolor="black", linewidth=0.5, hatch="///")
+        ax_genes.add_patch(prm_rect)
+
     ax_genes.set_xlabel('Genome Position', fontsize=12)
     ax_genes.set_ylabel('Genes', fontsize=12)
     ax_genes.set_yticks([])
