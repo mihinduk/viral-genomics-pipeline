@@ -523,7 +523,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         # Skip labels for frameshift genes (they should only appear in legend)
         # Include pr genes that are frameshifts in the skip logic
         skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or
-                     (is_pr_gene and gene in overlapping_genes and is_frameshift))
+                     (is_pr_gene and gene in overlapping_genes and is_frameshift) or "UTR" in gene)
         
         if not skip_label:
             # Add gene label using display name with offset handling
