@@ -357,8 +357,8 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         if original_gene:
             # Find overlapping genes first to properly detect pr as frameshift
             overlapping_genes_for_legend = find_overlapping_genes(gene_coords)
-            # Handle various pr gene naming patterns: "pr", "pr", etc.
-            is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "pr" in original_gene.lower())
+            # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+            is_pr_gene_legend = (original_gene.lower() == "pr" or original_gene.lower().endswith("_pr") or "protein_pr" in original_gene.lower())
             is_frameshift = ("'" in original_gene or "'" in label or "prime" in original_gene.lower() or "prime" in label.lower() or 
                            (is_pr_gene_legend and original_gene in overlapping_genes_for_legend))
             
@@ -399,14 +399,14 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
-        'C': {'offset_x': 150, 'offset_y': 0.15, 'fontsize': 9},
-        'M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
-        'membrane_glycoprecursor_prM': {'offset_x': -50, 'offset_y': 0.02, 'fontsize': 6},
-        '2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 7},
-        'NS4a': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
+        'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
+        'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
+        'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 10},
+        'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 10},
+        'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 10},
+        'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 10},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
-        'NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
+        'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
     }
     
     # Find overlapping genes
@@ -443,8 +443,8 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         
         # Check if this is a frameshift gene (contains "prime" in name or display name)
         # Also treat 'pr' as a frameshift gene when it overlaps with other genes
-        # Handle various pr gene naming patterns: "pr", "pr", etc.
-        is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "pr" in gene.lower())
+        # Handle various pr gene naming patterns: "pr", "protein_pr", etc.
+        is_pr_gene = (gene.lower() == "pr" or gene.lower().endswith("_pr") or "protein_pr" in gene.lower())
         is_frameshift = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or 
                         (is_pr_gene and gene in overlapping_genes))
         
@@ -544,33 +544,16 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
                 text_color = 'white'
                 
             ax_genes.text(label_x, label_y, display_name, ha='center', va='center',
-
-    # Draw prM as hatched overlay if it exists
+                         fontsize=font_size, fontweight='bold', color=text_color)
+    
+    # Configure gene track
+    # Add prM as hatched overlay if it exists
     if "prM" in gene_coords:
         prm_start, prm_end = gene_coords["prM"]
         prm_rect = Rectangle((prm_start, 0.25), prm_end - prm_start, 0.5,
                            facecolor="none", edgecolor="black", linewidth=0.5, hatch="///")
         ax_genes.add_patch(prm_rect)
-        
-        # Add prM label
-        prm_center = (prm_start + prm_end) / 2
-        display_name_prm = display_names.get("prM", "prM")
-        if "prM" in offset_genes:
-            x_offset = offset_genes["prM"].get("offset_x", 0)
-            y_offset = offset_genes["prM"].get("offset_y", 0)
-            font_size = offset_genes["prM"].get("fontsize", 10)
-            label_x = prm_center + x_offset
-            label_y = 0.5 + y_offset
-        else:
-            label_x = prm_center
-            label_y = 0.5
-            font_size = 10
-        
-        ax_genes.text(label_x, label_y, display_name_prm, ha="center", va="center",
-                     fontsize=font_size, fontweight="bold", color="white")
-                         fontsize=font_size, fontweight='bold', color=text_color)
-    
-    # Configure gene track
+
     ax_genes.set_xlabel('Genome Position', fontsize=12)
     ax_genes.set_ylabel('Genes', fontsize=12)
     ax_genes.set_yticks([])
