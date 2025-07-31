@@ -189,8 +189,23 @@ def extract_depth_from_bam(bam_file, output_file=None):
 def read_depth_file(depth_file):
     """Read depth file created by samtools depth"""
     print(f"📖 Reading depth file: {depth_file}")
-# Skip header line if it starts with chrom    with open(depth_file, "r") as f:        first_line = f.readline().strip()        skip_rows = 1 if first_line.startswith("chrom") else 0
-    df = pd.read_csv(depth_file, sep='\t', header=None, skiprows=skip_rows, names=['reference', 'position', 'depth'], dtype={'position': int, 'depth': int}, comment='#')
+    
+    # Read first line to check if it's a header
+    with open(depth_file, 'r') as f:
+        first_line = f.readline().strip()
+    
+    # Check if first line starts with 'chrom' (header)
+    if first_line.startswith('chrom'):
+        # Skip header line
+        df = pd.read_csv(depth_file, sep="	", header=0, 
+                         names=["reference", "position", "depth"],
+                         dtype={"position": int, "depth": int})
+    else:
+        # No header, read directly
+        df = pd.read_csv(depth_file, sep="	", header=None, 
+                         names=["reference", "position", "depth"],
+                         dtype={"position": int, "depth": int})
+    
     print(f"   Found {len(df)} positions")
     return df
 
