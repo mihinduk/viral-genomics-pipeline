@@ -1,0 +1,24 @@
+>SMS_5_ancC ancC protein [L2L, A1T] (from 100A>T)
+*VKMWNPQV*TLWIIKKH*VSK*WQRMLNYFQEPKKVMMKLL
+>SMS_5_C C protein [L2L, A1T] (from 100A>T)
+*VKMWNPQV*TLWIIKKH*VSK*WQRMLNYFQEPKKVMMKLL
+>SMS_5_prM prM protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_pr pr protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_M M protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_Env Env protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS1 NS1 protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS2a NS2a protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS2b NS2b protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS3 NS3 protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS4a NS4a protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_2K 2K protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS4b NS4b protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_NS5 NS5 protein (from alleles: 100A>T, 100A>G, 17937T>A, 17937T>C)
+>SMS_5_ancC ancC protein [L2L, A1G] (from 100A>G)
+*VKMWNPQV*TLWIIKKH*VSK*WQRMLNYFQEPKKVMMKLL
+>SMS_5_C C protein [L2L, A1G] (from 100A>G)
+*VKMWNPQV*TLWIIKKH*VSK*WQRMLNYFQEPKKVMMKLL
+>SMS_5_ancC ancC protein [A1T, A1G, L2L] (from alleles: 17937T>A, 17937T>C)
+*VKMWNPQV*TLWIIKKH*VSK*WQRMLNYFQEPKKVMMKLL
+>SMS_5_C C protein [A1T, A1G, L2L] (from alleles: 17937T>A, 17937T>C)
+*VKMWNPQV*TLWIIKKH*VSK*WQRMLNYFQEPKKVMMKLL

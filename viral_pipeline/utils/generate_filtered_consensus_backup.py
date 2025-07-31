@@ -192,9 +192,7 @@ def generate_multiallelic_consensus(ref_seq, mutations_df, virus_config):
             allele_mutations = pd.concat([other_mutations, this_allele], ignore_index=True)
             
             # Generate consensus for this allele combination
-            # Get reference base
-            ref_base = allele_info["mutation"]["REF"]
-            mut_id = f"{pos}{ref_base}>{allele_info['alt']}"
+            mut_id = f"{pos}>{allele_info['alt']}"
             consensus_seq = apply_mutations_single_sequence(ref_seq, allele_mutations, mut_id)
             
             consensus_results.append({
@@ -350,24 +348,9 @@ def main():
     parser.add_argument('--depth', type=int, default=200, help='Minimum depth (default: 200)')
     parser.add_argument('--freq', type=float, default=0.01, help='Minimum allele frequency (default: 0.01)')
     parser.add_argument('--output-prefix', required=True, help='Output file prefix')
-    parser.add_argument("--sample-name", help="Sample name for sequence IDs (default: extracted from output-prefix)")
     parser.add_argument('--mutations-only', action='store_true', help='Only include positions with mutations in output')
     
     args = parser.parse_args()
-
-    # Determine sample name
-    if args.sample_name:
-        sample_name = args.sample_name
-    else:
-        # Extract from output prefix
-        base_name = os.path.basename(args.output_prefix)
-        parts = base_name.split("_")
-        if len(parts) >= 2:
-            sample_name = "_".join(parts[:2])
-        else:
-            sample_name = parts[0]
-    
-    print(f"Using sample name: {sample_name}")
     
     print("Multi-Allelic Consensus Generator v2.0")
     print("=" * 50)
@@ -421,7 +404,7 @@ def main():
         suffix = f" [{result['allele_id']}]" if result['allele_id'] else ""
         consensus_record = SeqRecord(
             Seq(result['sequence']),
-            id=f"{sample_name}_filtered_consensus",
+            id=f"{args.accession}_filtered_consensus",
             description=f"Consensus with {result['total_mutations']} mutations{suffix} (Q>={args.quality}, D>={args.depth}, F>={args.freq})"
         )
         consensus_records.append(consensus_record)
@@ -455,7 +438,7 @@ def main():
         
         record = SeqRecord(
             Seq(protein_data['sequence']),
-            id=f"{sample_name}_{gene}",
+            id=f"{args.accession}_{gene}",
             description=desc
         )
         protein_records.append(record)
