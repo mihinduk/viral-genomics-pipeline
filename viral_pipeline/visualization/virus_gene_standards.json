@@ -39,7 +39,7 @@
       "pr": {
         "display_name": "pr",
         "full_name": "pr peptide",
-        "color": "#6ba3d0",
+        "color": "#20b2aa",
         "type": "structural",
         "aliases": [
           "protein_pr",
@@ -313,7 +313,7 @@
       "pr": {
         "display_name": "pr",
         "full_name": "pr peptide",
-        "color": "#6ba3d0",
+        "color": "#20b2aa",
         "type": "structural",
         "aliases": [
           "protein_pr",
