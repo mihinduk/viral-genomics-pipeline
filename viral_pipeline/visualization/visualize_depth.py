@@ -1,4 +1,4 @@
-#\!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 visualize_depth.py
 Visualizes read depth across viral genomes with gene annotations.
@@ -579,7 +579,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         # Skip labels for frameshift genes (they should only appear in legend)
         # Include pr genes that are frameshifts in the skip logic
         skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or
-                     (is_pr_gene and gene in overlapping_genes and is_frameshift))
+                     (gene == "protein_pr" and gene in overlapping_genes and is_frameshift))
         
         if not skip_label:
             # Add gene label using display name with offset handling
@@ -650,7 +650,7 @@ def generate_depth_html_report(depth_stats, image_path, html_path, accession):
     virus_name = get_virus_name(accession)
     
     # Create HTML content
-    html_content = f"""<\!DOCTYPE html>
+    html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <title>Depth Coverage Report - {virus_name}</title>
@@ -799,7 +799,7 @@ def main():
         print(f"   Max depth: {stats['max_depth']}x")
         print(f"   Positions ≥{args.min_depth}x: {stats['covered_positions']:,}/{stats['total_positions']:,} ({stats['coverage_percent']:.1f}%)")
         
-        print("\n🎉 Visualization complete\!")
+        print("\n🎉 Visualization complete!")
         
         # Clean up temporary depth file if we created it
         if args.bam and depth_file and Path(depth_file).exists():
