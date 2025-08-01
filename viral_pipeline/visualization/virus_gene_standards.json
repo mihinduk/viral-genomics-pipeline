@@ -9,7 +9,8 @@
         "aliases": [
           "anchored_capsid_protein_C",
           "ancC_protein",
-          "anchored_C"
+          "anchored_C",
+          "anchored_capsid_protein_ancC"
         ]
       },
       "C": {
