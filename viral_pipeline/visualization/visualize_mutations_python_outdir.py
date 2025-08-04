@@ -621,7 +621,7 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
             # Add gene name above table
             # Use display name for table header
             display_name = display_names.get(gene, gene)
-            fig.text(x + table_width/2, y + 0.15 + 0.03, display_name, 
+            fig.text(x + table_width/2, y + 0.02, display_name, 
                     ha='center', va='center', fontsize=12, 
                     fontweight='bold', color=gene_colors.get(gene, "#808080"))
 
