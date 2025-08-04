@@ -544,7 +544,24 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
         return
     
     # Add gene column based on position
-    all_mutations['Gene'] = all_mutations['POS'].apply(lambda pos: map_position_to_gene(pos, accession))
+    # Add gene column - use GENE_NAME if available, otherwise map by position
+    if "GENE_NAME" in all_mutations.columns:
+        # Use existing gene names from SnpEff output
+        all_mutations["Gene"] = all_mutations["GENE_NAME"]
+        
+        # Apply gene name mapping for known aliases
+        gene_mapping = KNOWN_VIRUSES.get(accession, {}).get("snpeff_gene_mapping", {})
+        alias_mapping = {
+            "Env": "E",  # Common alias for envelope protein
+            "env": "E",
+            "envelope": "E"
+        }
+        # Combine both mappings
+        all_mapping = {**gene_mapping, **alias_mapping}
+        all_mutations["Gene"] = all_mutations["Gene"].map(lambda x: all_mapping.get(x, x))
+    else:
+        # Fallback to position-based mapping
+        all_mutations["Gene"] = all_mutations["POS"].apply(lambda pos: map_position_to_gene(pos, accession))
     all_mutations = all_mutations.dropna(subset=['Gene'])
     
     # Parse amino acid changes
