@@ -576,10 +576,13 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
         gene_coords, gene_colors, _, _ = gene_info
         display_names = {gene: gene for gene in gene_coords}
     genes_with_mutations = []
-    for gene in gene_coords.keys():
-        gene_mutations = all_mutations[all_mutations['Gene'] == gene]
-        if not gene_mutations.empty:
-            genes_with_mutations.append((gene, gene_mutations))
+    # Group mutations by gene - use actual gene names from mutations data
+    genes_with_mutations = []
+    for gene in all_mutations["Gene"].unique():
+        if pd.notna(gene):
+            gene_mutations = all_mutations[all_mutations["Gene"] == gene]
+            if not gene_mutations.empty:
+                genes_with_mutations.append((gene, gene_mutations))
     
     if not genes_with_mutations:
         fig.text(0.5, 0.25, 'No mutations found above the specified cutoff',
