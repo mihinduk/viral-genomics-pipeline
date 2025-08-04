@@ -307,11 +307,19 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         'protein_2K': {'offset_x': 0, 'offset_y': 0.1, 'fontsize': 7},  # 2K above
         'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7}  # NS4A below
     }
-    
+    # Get gene properties for hatching
+    gene_properties = KNOWN_VIRUSES.get(accession, {}).get("gene_properties", {})
     for gene, (start, end) in gene_coords.items():
         width = end - start + 1
+    
+        # Check if gene should have hatching
+        props = gene_properties.get(gene, {})
+        should_hatch = props.get("hatching", False)
+        hatch_pattern = props.get("hatch_pattern", "...") if should_hatch else None
+        
         rect = Rectangle((start-1, gene_y), width, gene_height,
-                        facecolor=gene_colors.get(gene, "#808080"), edgecolor='black', linewidth=0.5)
+                        facecolor=gene_colors.get(gene, "#808080"), edgecolor="black", linewidth=0.5,
+                        hatch=hatch_pattern)
         ax.add_patch(rect)
         
         # Add gene label with offset handling
