@@ -1,0 +1,108 @@
+{
+  "gene_name_mappings": {
+    "COMMENT": "Universal patterns for mapping SnpEff gene names to visualization names",
+    
+    "flavivirus_patterns": {
+      "anchored_capsid_protein_ancC": "ancC",
+      "capsid_protein_C": "C",
+      "membrane_glycoprotein_precursor_prM": "prM", 
+      "protein_pr": "pr",
+      "membrane_glycoprotein_M": "M",
+      "envelope_protein_E": "E",
+      "nonstructural_protein_NS1": "NS1",
+      "nonstructural_protein_NS2A": "NS2A",
+      "nonstructural_protein_NS2B": "NS2B",
+      "nonstructural_protein_NS3": "NS3",
+      "nonstructural_protein_NS4A": "NS4A",
+      "protein_2K": "2K",
+      "nonstructural_protein_NS4B": "NS4B",
+      "RNA-dependent_RNA_polymerase_NS5": "NS5",
+      "nonstructural_protein_NS1_prime": "NS1'",
+      "truncated polyprotein WARF4": "WARF4"
+    },
+    
+    "alphavirus_patterns": {
+      "COMMENT": "Add alphavirus patterns when needed",
+      "capsid_(c)_protein": "C",
+      "e-1_structural_protein": "E1",
+      "e-2_structural_protein": "E2",
+      "e-3_structural_protein": "E3",
+      "6k_structural_protein": "6K",
+      "transframe fusion protein": "TF",
+      "nsP1_nonstructural_protein": "nsP1",
+      "nsP2_nonstructural_protein": "nsP2",
+      "nsP3_nonstructural_protein": "nsP3",
+      "nsP4_nonstructural_protein": "nsP4"
+    },
+    
+    "fallback_patterns": {
+      "COMMENT": "Regex patterns for unknown gene names",
+      ".*capsid.*": "C",
+      ".*envelope.*": "E", 
+      ".*NS([0-9]+[AB]?).*": "NS$1",
+      ".*nsP([0-9]+).*": "nsP$1"
+    }
+  },
+  
+  "gene_relationship_rules": {
+    "nested_proteins": {
+      "COMMENT": "Child genes nested within parent genes - use dotted hatching (...)",
+      "rules": [
+        {"parent": "ancC", "child": "C", "type": "mature_protein"},
+        {"parent": "prM", "child": "pr", "type": "signal_peptide"},
+        {"parent": "prM", "child": "M", "type": "mature_protein"}
+      ]
+    },
+    
+    "frameshift_variants": {
+      "COMMENT": "Genes that are frameshift variants of others - use diagonal hatching (///)",
+      "rules": [
+        {
+          "primary": "NS1", 
+          "variant": "NS1'", 
+          "type": "frameshift_variant",
+          "lineage": "WNV lineage 2",
+          "note": "NS1' protein; transframe fusion protein expressed via programmed ribosomal frameshifting; when frameshifting occurs, cleavage between NS1 and NS2A fails to occur"
+        },
+        {
+          "primary": "polyprotein", 
+          "variant": "WARF4", 
+          "type": "frameshift_variant",
+          "frameshift_position": 7311,
+          "lineage": "WNV lineage 1",
+          "note": "West Nile virus alternative reading frame 4 protein; Truncated version of polyprotein that will be produced when frameshifting occurs at nt 7311; WARF4 open reading frame is only found in lineage 1 of West Nile virus"
+        },
+        {
+          "primary": "6K",
+          "variant": "TF",
+          "type": "frameshift_variant",
+          "family": "alphavirus",
+          "virus": "Sindbis virus",
+          "frameshift_position": "10028-10029",
+          "coordinates": "9900..10028,10029..10108",
+          "example_accession": "OR882082.1",
+          "note": "Transframe fusion (TF) protein expressed via programmed ribosomal frameshifting. TF protein presumably plays a stabilizing role in the virion structure."
+        }
+      ]
+    },
+    
+    "small_proteins": {
+      "COMMENT": "Small proteins that might need special handling",
+      "genes": ["2K", "6K"],
+      "threshold_bp": 200
+    }
+  },
+  
+  "hatching_patterns": {
+    "nested_proteins": {
+      "pattern": "...",
+      "description": "Dotted pattern for proteins nested within larger polyproteins",
+      "examples": ["C within ancC", "pr and M within prM"]
+    },
+    "frameshift_variants": {
+      "pattern": "///",
+      "description": "Diagonal pattern for frameshift variants",
+      "examples": ["NS1' in WNV L2", "WARF4 in WNV L1"]
+    }
+  }
+}

@@ -148,75 +148,151 @@
   "NC_001477.1": {
     "name": "Dengue virus type 1",
     "family": "flavivirus",
-    "genome_length": 10723,
+    "genome_length": 10735,
     "gene_coords": {
-      "C": [
+      "ancC": [
         95,
         436
       ],
+      "C": [
+        95,
+        394
+      ],
       "prM": [
         437,
-        937
+        934
       ],
-      "Env": [
-        938,
-        2440
+      "pr": [
+        437,
+        709
+      ],
+      "M": [
+        710,
+        934
+      ],
+      "E": [
+        935,
+        2419
       ],
       "NS1": [
-        2441,
-        3496
+        2420,
+        3475
       ],
-      "NS2a": [
-        3497,
-        4189
+      "NS2A": [
+        3476,
+        4129
       ],
-      "NS2b": [
-        4190,
-        4582
+      "NS2B": [
+        4130,
+        4519
       ],
       "NS3": [
-        4583,
-        6439
+        4520,
+        6376
       ],
-      "NS4a": [
-        6440,
-        6886
+      "NS4A": [
+        6377,
+        6757
       ],
-      "NS4b": [
-        6887,
-        7642
+      "2K": [
+        6758,
+        6826
+      ],
+      "NS4B": [
+        6827,
+        7573
       ],
       "NS5": [
-        7643,
-        10366
+        7574,
+        10270
       ]
     },
     "colors": {
+      "ancC": "#313695",
       "C": "#4575b4",
       "prM": "#74add1",
-      "Env": "#abd9e9",
+      "pr": "#20b2aa",
+      "M": "#87ceeb",
+      "E": "#abd9e9",
       "NS1": "#fdae61",
-      "NS2a": "#f46d43",
-      "NS2b": "#d73027",
+      "NS2A": "#f46d43",
+      "NS2B": "#d73027",
       "NS3": "#a50026",
-      "NS4a": "#762a83",
-      "NS4b": "#9970ab",
+      "NS4A": "#762a83",
+      "2K": "#e6f5d0",
+      "NS4B": "#9970ab",
       "NS5": "#c2a5cf"
     },
     "structural_genes": [
+      "ancC",
       "C",
       "prM",
-      "Env"
+      "pr",
+      "M",
+      "E"
     ],
     "nonstructural_genes": [
       "NS1",
-      "NS2a",
-      "NS2b",
+      "NS2A",
+      "NS2B",
       "NS3",
-      "NS4a",
-      "NS4b",
+      "NS4A",
+      "2K",
+      "NS4B",
       "NS5"
-    ]
+    ],
+    "gene_properties": {
+      "C": {
+        "display_name": "C",
+        "hatching": true,
+        "nested_within": "ancC",
+        "type": "mature_protein",
+        "hatch_pattern": "...",
+        "description": "Mature capsid protein (cleaved from ancC)"
+      },
+      "pr": {
+        "display_name": "pr",
+        "hatching": true,
+        "nested_within": "prM",
+        "type": "signal_peptide",
+        "hatch_pattern": "...",
+        "description": "Signal peptide (cleaved from prM)"
+      },
+      "M": {
+        "display_name": "M",
+        "hatching": true,
+        "nested_within": "prM",
+        "type": "mature_protein",
+        "hatch_pattern": "...",
+        "description": "Mature membrane protein (cleaved from prM)"
+      },
+      "2K": {
+        "display_name": "2K",
+        "hatching": false,
+        "type": "small_protein",
+        "description": "2K linker protein"
+      }
+    },
+    "snpeff_gene_mapping": {
+      "anchored_capsid_protein_ancC": "ancC",
+      "capsid_protein_C": "C",
+      "membrane_glycoprotein_precursor_prM": "prM",
+      "protein_pr": "pr",
+      "membrane_glycoprotein_M": "M",
+      "envelope_protein_E": "E",
+      "nonstructural_protein_NS1": "NS1",
+      "nonstructural_protein_NS2A": "NS2A",
+      "nonstructural_protein_NS2B": "NS2B",
+      "nonstructural_protein_NS3": "NS3",
+      "nonstructural_protein_NS4A": "NS4A",
+      "protein_2K": "2K",
+      "nonstructural_protein_NS4B": "NS4B",
+      "RNA-dependent_RNA_polymerase_NS5": "NS5"
+    },
+    "annotation_source": "genbank",
+    "reference_genome": "NC_001477.1",
+    "config_version": "2.0.0",
+    "last_updated": "2025-08-02"
   },
   "AY532665.1": {
     "name": "West Nile virus strain NY99",
