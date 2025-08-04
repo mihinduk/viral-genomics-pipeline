@@ -569,11 +569,10 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
                 ha='center', va='center', fontsize=14, style='italic')
         return
     
-    # Smart table positioning: position tables closer to their genes when possible
+    # Smart table positioning with collision avoidance and row alignment
     table_width = 0.18
     table_height = 0.15
     table_spacing = 0.02
-    min_y_spacing = 0.05
     
     # Get gene positions for spatial awareness
     gene_positions = {}
@@ -589,40 +588,80 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
     sorted_genes = sorted(genes_with_mutations, 
                          key=lambda x: gene_positions.get(x[0], 0))
     
-    # Calculate optimal layout
-    max_cols = min(5, len(sorted_genes))  # Don't create unnecessary columns
-    n_rows = (len(sorted_genes) + max_cols - 1) // max_cols
+    # Calculate grid layout with collision avoidance
+    max_cols = 5
+    first_row_positions = []  # Track occupied positions in first row
+    second_row_positions = []  # Available positions for second row
     
-    # Dynamic width calculation - use available space efficiently  
+    # Position first row - evenly distributed
+    first_row_count = min(len(sorted_genes), max_cols)
     available_width = 1.0 - 2 * table_spacing
-    if len(sorted_genes) <= max_cols:
-        # Single row - distribute evenly with some preference for gene position
-        total_table_width = len(sorted_genes) * table_width
-        remaining_space = available_width - total_table_width
-        base_spacing = remaining_space / (len(sorted_genes) + 1)
-    else:
-        # Multiple rows - use standard grid
-        total_table_width = max_cols * table_width
-        remaining_space = available_width - total_table_width  
-        base_spacing = remaining_space / (max_cols + 1)
+    total_table_width = first_row_count * table_width
+    remaining_space = available_width - total_table_width
+    spacing = remaining_space / (first_row_count + 1)
     
+    # Calculate first row positions
+    for i in range(first_row_count):
+        x = table_spacing + spacing + i * (table_width + spacing)
+        first_row_positions.append(x)
+    
+    # For second row, identify collision zones and find safe positions
+    if len(sorted_genes) > max_cols:
+        # Calculate potential collision zones (where first row table labels extend down)
+        collision_zones = []
+        for x in first_row_positions:
+            # Each table label extends slightly below the table
+            label_left = x - 0.01  # Small buffer
+            label_right = x + table_width + 0.01
+            collision_zones.append((label_left, label_right))
+        
+        # Generate safe positions for second row
+        # Try to place tables in gaps between collision zones
+        safe_positions = []
+        
+        # Start from left edge
+        current_x = table_spacing + spacing
+        
+        while current_x + table_width <= 1.0 - table_spacing and len(safe_positions) < len(sorted_genes) - first_row_count:
+            # Check if this position would cause collision
+            table_left = current_x
+            table_right = current_x + table_width
+            
+            collision = False
+            for zone_left, zone_right in collision_zones:
+                # Check if table or its label would overlap with collision zone
+                if not (table_right < zone_left or table_left > zone_right):
+                    collision = True
+                    break
+            
+            if not collision:
+                safe_positions.append(current_x)
+                current_x += table_width + spacing
+            else:
+                # Move past the collision zone
+                for zone_left, zone_right in collision_zones:
+                    if current_x < zone_right:
+                        current_x = zone_right + table_spacing
+                        break
+        
+        second_row_positions = safe_positions
+    
+    # Apply positions to genes
     for i, (gene, gene_mutations) in enumerate(sorted_genes):
-        row = i // max_cols
-        col = i % max_cols
-        
-        # Calculate position with improved spacing
-        if len(sorted_genes) <= max_cols:
-            # Single row - better spacing
-            x = table_spacing + base_spacing + col * (table_width + base_spacing)
+        if i < first_row_count:
+            # First row - aligned at same Y
+            x = first_row_positions[i]
+            y = start_row - 0.05  # Top row alignment
         else:
-            # Multiple rows - grid layout
-            cols_in_this_row = min(max_cols, len(sorted_genes) - row * max_cols)
-            row_width = cols_in_this_row * table_width + (cols_in_this_row - 1) * table_spacing
-            start_x = (1 - row_width) / 2
-            x = start_x + col * (table_width + table_spacing)
-        
-        # Y position with tighter spacing
-        y = start_row - row * (table_height + min_y_spacing + 0.05)
+            # Second row - use safe positions
+            second_row_index = i - first_row_count
+            if second_row_index < len(second_row_positions):
+                x = second_row_positions[second_row_index]
+            else:
+                # Fallback to regular grid if we run out of safe positions
+                col = second_row_index % max_cols
+                x = table_spacing + spacing + col * (table_width + spacing)
+            y = start_row - 0.25  # Second row
         
         # Create table data
         table_data = []
