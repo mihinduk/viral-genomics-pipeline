@@ -569,24 +569,60 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
                 ha='center', va='center', fontsize=14, style='italic')
         return
     
-    # Create tables in a grid layout (max 5 columns)
-    max_cols = 5
-    n_genes = len(genes_with_mutations)
-    n_rows = (n_genes + max_cols - 1) // max_cols
-    
-    # Calculate table positions
+    # Smart table positioning: position tables closer to their genes when possible
     table_width = 0.18
+    table_height = 0.15
     table_spacing = 0.02
-    total_width = min(n_genes, max_cols) * table_width + (min(n_genes, max_cols) - 1) * table_spacing
-    start_x = (1 - total_width) / 2
+    min_y_spacing = 0.05
     
-    for i, (gene, gene_mutations) in enumerate(genes_with_mutations):
+    # Get gene positions for spatial awareness
+    gene_positions = {}
+    for gene, mutations in genes_with_mutations:
+        if gene in gene_coords:
+            start, end = gene_coords[gene]
+            center = (start + end) / 2
+            # Get genome length from KNOWN_VIRUSES config
+            genome_length = KNOWN_VIRUSES.get(accession, {}).get("genome_length", 10000)
+            gene_positions[gene] = center / genome_length  # Normalize to 0-1
+    
+    # Sort genes by their genomic position for logical layout
+    sorted_genes = sorted(genes_with_mutations, 
+                         key=lambda x: gene_positions.get(x[0], 0))
+    
+    # Calculate optimal layout
+    max_cols = min(5, len(sorted_genes))  # Don't create unnecessary columns
+    n_rows = (len(sorted_genes) + max_cols - 1) // max_cols
+    
+    # Dynamic width calculation - use available space efficiently  
+    available_width = 1.0 - 2 * table_spacing
+    if len(sorted_genes) <= max_cols:
+        # Single row - distribute evenly with some preference for gene position
+        total_table_width = len(sorted_genes) * table_width
+        remaining_space = available_width - total_table_width
+        base_spacing = remaining_space / (len(sorted_genes) + 1)
+    else:
+        # Multiple rows - use standard grid
+        total_table_width = max_cols * table_width
+        remaining_space = available_width - total_table_width  
+        base_spacing = remaining_space / (max_cols + 1)
+    
+    for i, (gene, gene_mutations) in enumerate(sorted_genes):
         row = i // max_cols
         col = i % max_cols
         
-        # Calculate position
-        x = start_x + col * (table_width + table_spacing)
-        y = start_row - row * 0.25
+        # Calculate position with improved spacing
+        if len(sorted_genes) <= max_cols:
+            # Single row - better spacing
+            x = table_spacing + base_spacing + col * (table_width + base_spacing)
+        else:
+            # Multiple rows - grid layout
+            cols_in_this_row = min(max_cols, len(sorted_genes) - row * max_cols)
+            row_width = cols_in_this_row * table_width + (cols_in_this_row - 1) * table_spacing
+            start_x = (1 - row_width) / 2
+            x = start_x + col * (table_width + table_spacing)
+        
+        # Y position with tighter spacing
+        y = start_row - row * (table_height + min_y_spacing + 0.05)
         
         # Create table data
         table_data = []
