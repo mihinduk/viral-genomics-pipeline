@@ -247,7 +247,7 @@
         "hatching": true,
         "nested_within": "ancC",
         "type": "mature_protein",
-        "hatch_pattern": ".....",
+        "hatch_pattern": "///",
         "description": "Mature capsid protein (cleaved from ancC)"
       },
       "pr": {
@@ -255,7 +255,7 @@
         "hatching": true,
         "nested_within": "prM",
         "type": "signal_peptide",
-        "hatch_pattern": ".....",
+        "hatch_pattern": "///",
         "description": "Signal peptide (cleaved from prM)"
       },
       "M": {
@@ -263,7 +263,7 @@
         "hatching": true,
         "nested_within": "prM",
         "type": "mature_protein",
-        "hatch_pattern": ".....",
+        "hatch_pattern": "///",
         "description": "Mature membrane protein (cleaved from prM)"
       },
       "2K": {
@@ -276,14 +276,14 @@
         "display_name": "ancC",
         "hatching": true,
         "type": "polyprotein",
-        "hatch_pattern": ".....",
+        "hatch_pattern": "///",
         "description": "Anchored capsid protein (contains C)"
       },
       "prM": {
         "display_name": "prM",
         "hatching": true,
         "type": "polyprotein",
-        "hatch_pattern": ".....",
+        "hatch_pattern": "///",
         "description": "Membrane glycoprotein precursor (contains pr and M)"
       }
     },
