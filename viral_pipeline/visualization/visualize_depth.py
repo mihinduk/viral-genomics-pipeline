@@ -248,16 +248,27 @@ def read_depth_file(depth_file):
         first_line = f.readline().strip()
     
     # Check if first line starts with 'chrom' (header)
-    if first_line.startswith('chrom'):
-        # Skip header line
-        df = pd.read_csv(depth_file, sep="\t", header=0, 
-                         names=["reference", "position", "depth"],
-                         dtype={"position": int, "depth": int})
-    else:
-        # No header, read directly
-        df = pd.read_csv(depth_file, sep="\t", header=None, 
-                         names=["reference", "position", "depth"],
-                         dtype={"position": int, "depth": int})
+    # Try to detect if there is a header
+    try:
+        # Try reading without header first
+        df = pd.read_csv(depth_file, sep="\t", header=None)
+        # Check if first row contains strings
+        if df.iloc[0].apply(lambda x: not str(x).replace(".", "").isdigit()).any():
+            # Has header, re-read skipping it
+            df = pd.read_csv(depth_file, sep="\t", skiprows=1, header=None)
+    except:
+        # Fallback to reading with header
+        df = pd.read_csv(depth_file, sep="\t", skiprows=1, header=None)
+    
+    # Set column names based on number of columns
+    if len(df.columns) == 2:
+        df.columns = ["position", "depth"]
+    elif len(df.columns) == 3:
+        df.columns = ["reference", "position", "depth"]
+    
+    # Convert types
+    df["position"] = df["position"].astype(int)
+    df["depth"] = df["depth"].astype(int)
     
     print(f"   Found {len(df)} positions")
     return df
@@ -470,6 +481,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
     
     # Define genes that need label offsetting for flaviviruses (same as mutation visualization)
     offset_genes = {
+        "ancC": {"offset_x": -60, "offset_y": -0.25, "fontsize": 8},         "C": {"offset_x": 60, "offset_y": 0.25, "fontsize": 8},         "prM": {"offset_x": 0, "offset_y": -0.25, "fontsize": 8},         "pr": {"offset_x": -40, "offset_y": 0.25, "fontsize": 7},         "M": {"offset_x": 40, "offset_y": 0.25, "fontsize": 7},
         'capsid_protein_C': {'offset_x': 50, 'offset_y': 0, 'fontsize': 9},
         'membrane_glycoprotein_M': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
