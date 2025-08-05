@@ -325,7 +325,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
         # Add gene label with offset handling
         gene_center = start + width/2 - 1
         # Use display name if available
-        display_name = display_names.get(gene, gene)
+        display_name = gene  # Use actual gene name to match exported table
         
         # Check if this gene needs offset
         if gene in offset_genes:
@@ -357,7 +357,7 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     nonstruct_coords = []
     
     for gene, (start, end) in gene_coords.items():
-        display_name = display_names.get(gene, gene)
+        display_name = gene  # Use actual gene name to match exported table
         # Check if the display name indicates structural protein
         if any(struct_gene in gene for struct_gene in structural_genes) or display_name in ['C', 'ancC', 'pr', 'prM', 'M', 'E', 'Env']:
             struct_coords.append((start, end))
@@ -715,7 +715,7 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
             
             # Add gene name above table
             # Use display name for table header
-            display_name = display_names.get(gene, gene)
+            display_name = gene  # Use actual gene name to match exported table
             fig.text(x + table_width/2, y + 0.02, display_name, 
                     ha='center', va='center', fontsize=12, 
                     fontweight='bold', color=gene_colors.get(gene, "#808080"))
