@@ -487,6 +487,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
         'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
         'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
+        "2K": {"offset_x": 0, "offset_y": -0.15, "fontsize": 7},
         "2K": {"offset_x": 0, "offset_y": -0.02, "fontsize": 7},
         'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
@@ -584,15 +585,20 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
                                      facecolor=color, edgecolor='black', linewidth=0.5)
                 ax_genes.add_patch(final_rect)
         else:
-            # Regular gene - draw as normal solid rectangle
+            # Regular gene - check for hatching from gene_properties
+            gene_properties = KNOWN_VIRUSES.get(accession, {}).get("gene_properties", {})
+            props = gene_properties.get(gene, {})
+            should_hatch = props.get("hatching", False)
+            hatch_pattern = props.get("hatch_pattern", "...") if should_hatch else None
+            
             rect = Rectangle((start, gene_y), end - start, gene_height,
-                            facecolor=color, edgecolor='black', linewidth=0.5)
+                            facecolor=color, edgecolor='black', linewidth=0.5,
+                            hatch=hatch_pattern)
             ax_genes.add_patch(rect)
         
         # Skip labels for frameshift genes (they should only appear in legend)
         # Include pr genes that are frameshifts in the skip logic
-        skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower() or
-                     (gene == "protein_pr" and gene in overlapping_genes and is_frameshift))
+        skip_label = ("'" in gene or "'" in display_name or "prime" in gene.lower() or "prime" in display_name.lower())
         
         if not skip_label:
             # Add gene label using display name with offset handling
