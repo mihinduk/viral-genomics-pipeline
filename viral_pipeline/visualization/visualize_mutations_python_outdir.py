@@ -209,16 +209,29 @@ def check_dependencies():
 GENOME_LENGTH = 11029
 
 def map_position_to_gene(position, accession):
-    """Map a genomic position to the corresponding gene"""
+    """Map a genomic position to all corresponding genes, showing overlaps"""
     gene_info = get_gene_info(accession)
     if len(gene_info) == 5:
         gene_coords, _, _, _, _ = gene_info
     else:
         gene_coords, _, _, _ = gene_info
+    
+    # Find all genes that contain this position
+    matching_genes = []
     for gene, (start, end) in gene_coords.items():
         if start <= position <= end:
-            return gene
-    return None
+            matching_genes.append(gene)
+    
+    if not matching_genes:
+        return None
+    
+    # Sort genes by length (longest first) for consistent ordering
+    gene_lengths = [(gene, gene_coords[gene][1] - gene_coords[gene][0] + 1) for gene in matching_genes]
+    gene_lengths.sort(key=lambda x: x[1], reverse=True)
+    sorted_genes = [g[0] for g in gene_lengths]
+    
+    # Return combined gene names separated by "/"
+    return "/".join(sorted_genes)
 
 def parse_amino_acid_change(hgvs_p):
     """Parse amino acid change from HGVSp notation"""
@@ -576,11 +589,29 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
         gene_coords, gene_colors, _, _ = gene_info
         display_names = {gene: gene for gene in gene_coords}
     genes_with_mutations = []
-    # Group mutations by gene - use actual gene names from mutations data
+    # Group mutations by gene - expand dual genes to appear in both tables
+    # First, expand rows with dual genes (e.g., "prM/pr" -> separate rows for "prM" and "pr")
+    expanded_mutations = []
+    for _, row in all_mutations.iterrows():
+        gene = row["Gene"]
+        if pd.notna(gene) and "/" in str(gene):
+            # Split dual genes and create separate rows for each
+            individual_genes = gene.split("/")
+            for individual_gene in individual_genes:
+                new_row = row.copy()
+                new_row["Gene"] = individual_gene.strip()
+                expanded_mutations.append(new_row)
+        else:
+            expanded_mutations.append(row)
+    
+    # Convert back to DataFrame
+    expanded_df = pd.DataFrame(expanded_mutations)
+    
+    # Group mutations by individual genes
     genes_with_mutations = []
-    for gene in all_mutations["Gene"].unique():
+    for gene in expanded_df["Gene"].unique():
         if pd.notna(gene):
-            gene_mutations = all_mutations[all_mutations["Gene"] == gene]
+            gene_mutations = expanded_df[expanded_df["Gene"] == gene]
             if not gene_mutations.empty:
                 genes_with_mutations.append((gene, gene_mutations))
     
