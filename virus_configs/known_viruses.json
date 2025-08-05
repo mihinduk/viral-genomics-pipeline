@@ -291,7 +291,7 @@
       "anchored_capsid_protein_ancC": "ancC",
       "capsid_protein_C": "C",
       "membrane_glycoprotein_precursor_prM": "prM",
-      "protein_pr": "pr",
+      "protein_pr": "prM",
       "membrane_glycoprotein_M": "M",
       "envelope_protein_E": "E",
       "nonstructural_protein_NS1": "NS1",
