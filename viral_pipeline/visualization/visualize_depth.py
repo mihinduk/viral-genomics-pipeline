@@ -487,6 +487,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
         'protein_pr': {'offset_x': -20, 'offset_y': -0.02, 'fontsize': 6},
         'membrane_glycoprotein_precursor_prM': {'offset_x': 20, 'offset_y': 0.02, 'fontsize': 6},
         'protein_2K': {'offset_x': 0, 'offset_y': -0.02, 'fontsize': 7},
+        "2K": {"offset_x": 0, "offset_y": -0.02, "fontsize": 7},
         'nonstructural_protein_NS4A': {'offset_x': 0, 'offset_y': 0.02, 'fontsize': 7},
         'nonstructural_protein_NS1': {'offset_x': 0, 'offset_y': 0, 'fontsize': 9},
         'nonstructural_protein_NS1_prime': {'offset_x': 0, 'offset_y': -0.15, 'fontsize': 9}
