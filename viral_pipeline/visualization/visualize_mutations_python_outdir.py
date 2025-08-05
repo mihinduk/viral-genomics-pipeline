@@ -592,6 +592,8 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
     # Group mutations by gene - expand dual genes to appear in both tables
     # First, expand rows with dual genes (e.g., "prM/pr" -> separate rows for "prM" and "pr")
     expanded_mutations = []
+    original_gene_names = {}  # Map individual gene -> original dual gene name
+    
     for _, row in all_mutations.iterrows():
         gene = row["Gene"]
         if pd.notna(gene) and "/" in str(gene):
@@ -601,8 +603,12 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
                 new_row = row.copy()
                 new_row["Gene"] = individual_gene.strip()
                 expanded_mutations.append(new_row)
+                # Remember the original dual gene name for table headers
+                original_gene_names[individual_gene.strip()] = gene
         else:
             expanded_mutations.append(row)
+            if pd.notna(gene):
+                original_gene_names[gene] = gene  # Single gene maps to itself
     
     # Convert back to DataFrame
     expanded_df = pd.DataFrame(expanded_mutations)
@@ -613,7 +619,9 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
         if pd.notna(gene):
             gene_mutations = expanded_df[expanded_df["Gene"] == gene]
             if not gene_mutations.empty:
-                genes_with_mutations.append((gene, gene_mutations))
+                # Use original dual gene name for display
+                display_gene = original_gene_names.get(gene, gene)
+                genes_with_mutations.append((gene, gene_mutations, display_gene))
     
     if not genes_with_mutations:
         fig.text(0.5, 0.25, 'No mutations found above the specified cutoff',
@@ -627,7 +635,7 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
     
     # Get gene positions for spatial awareness
     gene_positions = {}
-    for gene, mutations in genes_with_mutations:
+    for gene, mutations, display_gene in genes_with_mutations:
         if gene in gene_coords:
             start, end = gene_coords[gene]
             center = (start + end) / 2
@@ -698,7 +706,7 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
         second_row_positions = safe_positions
     
     # Apply positions to genes
-    for i, (gene, gene_mutations) in enumerate(sorted_genes):
+    for i, (gene, gene_mutations, display_gene) in enumerate(sorted_genes):
         if i < first_row_count:
             # First row - aligned at same Y
             x = first_row_positions[i]
@@ -745,8 +753,8 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
                 table[(0, i)].set_text_props(weight='bold', color='white')
             
             # Add gene name above table
-            # Use display name for table header
-            display_name = gene  # Use actual gene name to match exported table
+            # Use dual gene name for table header to show all affected proteins
+            display_name = display_gene  # Use original dual gene name (e.g., "prM/pr")
             fig.text(x + table_width/2, y + 0.02, display_name, 
                     ha='center', va='center', fontsize=12, 
                     fontweight='bold', color=gene_colors.get(gene, "#808080"))
