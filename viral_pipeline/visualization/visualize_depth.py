@@ -620,7 +620,7 @@ def create_depth_plot(depth_df, accession, title=None, min_depth_threshold=200, 
             if display_name == '2K':
                 text_color = 'black'
             else:
-                text_color = 'white'
+                text_color = "black"
                 
             ax_genes.text(label_x, label_y, display_name, ha='center', va='center',
                          fontsize=font_size, fontweight='bold', color=text_color)
