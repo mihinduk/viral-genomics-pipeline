@@ -205,8 +205,7 @@ def check_dependencies():
     return True
 
 # Colors matching the R version exactly
-# Genome length for West Nile virus
-GENOME_LENGTH = 11029
+# Note: Genome length is now dynamically retrieved per virus
 
 def map_position_to_gene(position, accession):
     """Map a genomic position to all corresponding genes, showing overlaps"""
@@ -289,7 +288,9 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     
     
     # Set up the plot
-    ax.set_xlim(0, GENOME_LENGTH)
+    # Get genome length dynamically for this virus
+    genome_length = KNOWN_VIRUSES.get(accession, {}).get("genome_length", 11000)
+    ax.set_xlim(0, genome_length)
     # Tighter spacing - bring position line closer to genome for better space utilization
     ax.set_ylim(-0.35, 1.0)
     
@@ -357,10 +358,11 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     
     # Draw 3' UTR
     # Find last gene end
-    last_gene_end = max(coord[1] for coord in gene_coords.values()) if gene_coords else GENOME_LENGTH
+    genome_length = KNOWN_VIRUSES.get(accession, {}).get("genome_length", 11000)
+    last_gene_end = max(coord[1] for coord in gene_coords.values()) if gene_coords else genome_length
     utr3_start = last_gene_end
-    if utr3_start < GENOME_LENGTH:
-        utr3_rect = Rectangle((utr3_start, gene_y), GENOME_LENGTH - utr3_start, gene_height,
+    if utr3_start < genome_length:
+        utr3_rect = Rectangle((utr3_start, gene_y), genome_length - utr3_start, gene_height,
                              facecolor='lightgray', edgecolor='black', linewidth=0.5)
         ax.add_patch(utr3_rect)
     
@@ -510,8 +512,8 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
     
     # Format x-axis
     ax.set_xlabel('Genome Position', fontsize=12, fontweight='bold')
-    ax.set_xticks(np.arange(0, GENOME_LENGTH+1, 1000))
-    ax.set_xticklabels([f'{x:,}' for x in np.arange(0, GENOME_LENGTH+1, 1000)])
+    ax.set_xticks(np.arange(0, genome_length+1, 1000))
+    ax.set_xticklabels([f'{x:,}' for x in np.arange(0, genome_length+1, 1000)])
     
     # Remove y-axis
     ax.set_yticks([])
@@ -627,7 +629,12 @@ def create_mutation_tables(fig, mutations_df, start_row=0.4, gene_filter="all", 
             center = (start + end) / 2
             # Get genome length from KNOWN_VIRUSES config
             genome_length = KNOWN_VIRUSES.get(accession, {}).get("genome_length", 10000)
-            gene_positions[gene] = center / genome_length  # Normalize to 0-1
+            # Get genome length dynamically for this virus
+        genome_length = KNOWN_VIRUSES.get(accession, {}).get("genome_length", 11000)
+        if genome_length == 0:
+            print(f"⚠️  WARNING: genome_length is 0 for {accession}, using default 11000")
+            genome_length = 11000
+        gene_positions[gene] = center / genome_length  # Normalize to 0-1
     
     # Sort genes by their genomic position for logical layout
     sorted_genes = sorted(genes_with_mutations, 

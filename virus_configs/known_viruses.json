@@ -430,83 +430,136 @@
     },
     "family": "flavivirus",
     "gene_coords": {
-      "RNA-dependent_RNA_polymerase_NS5": [
-        7667,
-        10375
-      ],
-      "anchored_capsid_protein_ancC": [
+      "ancC": [
         107,
         472
       ],
-      "capsid_protein_C": [
+      "C": [
         107,
         418
       ],
-      "envelope_protein_E": [
-        977,
-        2488
+      "prM": [
+        473,
+        976
       ],
-      "membrane_glycoprotein_M": [
+      "pr": [
+        473,
+        751
+      ],
+      "M": [
         752,
         976
       ],
-      "membrane_glycoprotein_precursor_prM": [
-        473,
-        976
+      "E": [
+        977,
+        2488
       ],
-      "nonstructural_protein_NS1": [
+      "NS1": [
         2489,
         3544
       ],
-      "nonstructural_protein_NS2A": [
+      "NS2A": [
         3545,
         4222
       ],
-      "nonstructural_protein_NS2B": [
+      "NS2B": [
         4223,
         4612
       ],
-      "nonstructural_protein_NS3": [
+      "NS3": [
         4613,
         6463
       ],
-      "nonstructural_protein_NS4A": [
+      "NS4A": [
         6464,
         6844
       ],
-      "nonstructural_protein_NS4B": [
-        6914,
-        7666
-      ],
-      "protein_2K": [
+      "2K": [
         6845,
         6913
       ],
-      "protein_pr": [
-        473,
-        751
+      "NS4B": [
+        6914,
+        7666
+      ],
+      "NS5": [
+        7667,
+        10375
       ]
     },
-    "genome_length": 0,
-    "name": "KU955591.1 (annotated by BLAST)",
+    "genome_length": 10806,
+    "name": "Zika virus, complete genome",
     "nonstructural_genes": [
-      "nonstructural_protein_NS1",
-      "nonstructural_protein_NS2A",
-      "nonstructural_protein_NS2B",
-      "nonstructural_protein_NS3",
-      "nonstructural_protein_NS4A",
-      "protein_2K",
-      "nonstructural_protein_NS4B",
-      "RNA-dependent_RNA_polymerase_NS5"
+      "NS1",
+      "NS2A",
+      "NS2B",
+      "NS3",
+      "NS4A",
+      "2K",
+      "NS4B",
+      "NS5"
     ],
     "structural_genes": [
-      "anchored_capsid_protein_ancC",
-      "capsid_protein_C",
-      "membrane_glycoprotein_precursor_prM",
-      "protein_pr",
-      "membrane_glycoprotein_M",
-      "envelope_protein_E"
-    ]
+      "ancC",
+      "C",
+      "prM",
+      "pr",
+      "M",
+      "E"
+    ],
+    "gene_properties": {
+      "ancC": {
+        "display_name": "ancC",
+        "hatching": true,
+        "type": "polyprotein",
+        "hatch_pattern": "///",
+        "description": "Anchored capsid protein (contains C)"
+      },
+      "C": {
+        "display_name": "C",
+        "hatching": true,
+        "nested_within": "ancC",
+        "hatch_pattern": "...",
+        "description": "Capsid protein (within ancC)"
+      },
+      "prM": {
+        "display_name": "prM",
+        "hatching": true,
+        "type": "polyprotein",
+        "hatch_pattern": "///",
+        "description": "Membrane glycoprotein precursor (contains pr and M)"
+      },
+      "pr": {
+        "display_name": "pr",
+        "hatching": true,
+        "nested_within": "prM",
+        "hatch_pattern": "...",
+        "description": "pr peptide (within prM)"
+      },
+      "M": {
+        "display_name": "M",
+        "hatching": true,
+        "nested_within": "prM",
+        "hatch_pattern": "...",
+        "description": "Membrane glycoprotein (within prM)"
+      }
+    },
+    "snpeff_gene_mapping": {
+      "anchored_capsid_protein_ancC": "ancC",
+      "capsid_protein_C": "C",
+      "membrane_glycoprotein_precursor_prM": "prM",
+      "protein_pr": "pr",
+      "membrane_glycoprotein_M": "M",
+      "envelope_protein_E": "E",
+      "nonstructural_protein_NS1": "NS1",
+      "nonstructural_protein_NS2A": "NS2A",
+      "nonstructural_protein_NS2B": "NS2B",
+      "nonstructural_protein_NS3": "NS3",
+      "nonstructural_protein_NS4A": "NS4A",
+      "protein_2K": "2K",
+      "nonstructural_protein_NS4B": "NS4B",
+      "RNA-dependent_RNA_polymerase_NS5": "NS5"
+    }
   },
   "NC_075022.1": {
     "name": "Venezuelan equine encephalitis virus",
