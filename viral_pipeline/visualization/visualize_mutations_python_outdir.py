@@ -353,8 +353,15 @@ def create_genome_diagram(ax, mutations_df, title, gene_filter="all", highlight_
             label_y = gene_y + gene_height/2
             font_size = 9
             
+        # Use white text for hatched genes to improve visibility
+        gene_properties = KNOWN_VIRUSES.get(accession, {}).get("gene_properties", {})
+        props = gene_properties.get(gene, {})
+        is_hatched = props.get("hatching", False)
+        text_color = 'white' if is_hatched else 'black'
+        
         ax.text(label_x, label_y, display_name, 
-               ha='center', va='center', fontsize=font_size, fontweight='bold')
+               ha='center', va='center', fontsize=font_size, fontweight='bold', 
+               color=text_color)
     
     # Draw 3' UTR
     # Find last gene end
