@@ -1,0 +1,558 @@
+{
+  "NC_009942.1": {
+    "name": "West Nile virus",
+    "family": "flavivirus",
+    "genome_length": 11029,
+    "gene_coords": {
+      "C": [
+        97,
+        465
+      ],
+      "prM": [
+        466,
+        966
+      ],
+      "Env": [
+        967,
+        2469
+      ],
+      "NS1": [
+        2470,
+        3525
+      ],
+      "NS2a": [
+        3526,
+        4218
+      ],
+      "NS2b": [
+        4219,
+        4611
+      ],
+      "NS3": [
+        4612,
+        6468
+      ],
+      "NS4a": [
+        6469,
+        6915
+      ],
+      "NS4b": [
+        6916,
+        7671
+      ],
+      "NS5": [
+        7672,
+        10395
+      ]
+    },
+    "colors": {
+      "C": "#4575b4",
+      "prM": "#74add1",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf"
+    },
+    "structural_genes": [
+      "C",
+      "prM",
+      "Env"
+    ],
+    "nonstructural_genes": [
+      "NS1",
+      "NS2a",
+      "NS2b",
+      "NS3",
+      "NS4a",
+      "NS4b",
+      "NS5"
+    ]
+  },
+  "HM440560.1": {
+    "name": "Powassan virus",
+    "family": "flavivirus",
+    "genome_length": 10839,
+    "gene_coords": {
+      "C": [
+        110,
+        357
+      ],
+      "prM": [
+        358,
+        858
+      ],
+      "Env": [
+        859,
+        2361
+      ],
+      "NS1": [
+        2362,
+        3417
+      ],
+      "NS2a": [
+        3418,
+        4110
+      ],
+      "NS2b": [
+        4111,
+        4503
+      ],
+      "NS3": [
+        4504,
+        6360
+      ],
+      "NS4a": [
+        6361,
+        6807
+      ],
+      "NS4b": [
+        6808,
+        7563
+      ],
+      "NS5": [
+        7564,
+        10287
+      ]
+    },
+    "colors": {
+      "C": "#4575b4",
+      "prM": "#74add1",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf"
+    },
+    "structural_genes": [
+      "C",
+      "prM",
+      "Env"
+    ],
+    "nonstructural_genes": [
+      "NS1",
+      "NS2a",
+      "NS2b",
+      "NS3",
+      "NS4a",
+      "NS4b",
+      "NS5"
+    ]
+  },
+  "NC_001477.1": {
+    "name": "Dengue virus type 1",
+    "family": "flavivirus",
+    "genome_length": 10735,
+    "gene_coords": {
+      "ancC": [
+        95,
+        436
+      ],
+      "C": [
+        95,
+        394
+      ],
+      "prM": [
+        437,
+        934
+      ],
+      "pr": [
+        437,
+        709
+      ],
+      "M": [
+        710,
+        934
+      ],
+      "E": [
+        935,
+        2419
+      ],
+      "NS1": [
+        2420,
+        3475
+      ],
+      "NS2A": [
+        3476,
+        4129
+      ],
+      "NS2B": [
+        4130,
+        4519
+      ],
+      "NS3": [
+        4520,
+        6376
+      ],
+      "NS4A": [
+        6377,
+        6757
+      ],
+      "2K": [
+        6758,
+        6826
+      ],
+      "NS4B": [
+        6827,
+        7573
+      ],
+      "NS5": [
+        7574,
+        10270
+      ]
+    },
+    "colors": {
+      "ancC": "#313695",
+      "C": "#4575b4",
+      "prM": "#74add1",
+      "pr": "#20b2aa",
+      "M": "#87ceeb",
+      "E": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS2A": "#f46d43",
+      "NS2B": "#d73027",
+      "NS3": "#a50026",
+      "NS4A": "#762a83",
+      "2K": "#e6f5d0",
+      "NS4B": "#9970ab",
+      "NS5": "#c2a5cf"
+    },
+    "structural_genes": [
+      "ancC",
+      "C",
+      "prM",
+      "pr",
+      "M",
+      "E"
+    ],
+    "nonstructural_genes": [
+      "NS1",
+      "NS2A",
+      "NS2B",
+      "NS3",
+      "NS4A",
+      "2K",
+      "NS4B",
+      "NS5"
+    ],
+    "gene_properties": {
+      "C": {
+        "display_name": "C",
+        "hatching": true,
+        "nested_within": "ancC",
+        "type": "mature_protein",
+        "hatch_pattern": "...",
+        "description": "Mature capsid protein (cleaved from ancC)"
+      },
+      "pr": {
+        "display_name": "pr",
+        "hatching": true,
+        "nested_within": "prM",
+        "type": "signal_peptide",
+        "hatch_pattern": "...",
+        "description": "Signal peptide (cleaved from prM)"
+      },
+      "M": {
+        "display_name": "M",
+        "hatching": true,
+        "nested_within": "prM",
+        "type": "mature_protein",
+        "hatch_pattern": "...",
+        "description": "Mature membrane protein (cleaved from prM)"
+      },
+      "2K": {
+        "display_name": "2K",
+        "hatching": false,
+        "type": "small_protein",
+        "description": "2K linker protein"
+      }
+    },
+    "snpeff_gene_mapping": {
+      "anchored_capsid_protein_ancC": "ancC",
+      "capsid_protein_C": "C",
+      "membrane_glycoprotein_precursor_prM": "prM",
+      "protein_pr": "pr",
+      "membrane_glycoprotein_M": "M",
+      "envelope_protein_E": "E",
+      "nonstructural_protein_NS1": "NS1",
+      "nonstructural_protein_NS2A": "NS2A",
+      "nonstructural_protein_NS2B": "NS2B",
+      "nonstructural_protein_NS3": "NS3",
+      "nonstructural_protein_NS4A": "NS4A",
+      "protein_2K": "2K",
+      "nonstructural_protein_NS4B": "NS4B",
+      "RNA-dependent_RNA_polymerase_NS5": "NS5"
+    },
+    "annotation_source": "genbank",
+    "reference_genome": "NC_001477.1",
+    "config_version": "2.0.0",
+    "last_updated": "2025-08-02"
+  },
+  "AY532665.1": {
+    "name": "West Nile virus strain NY99",
+    "family": "flavivirus",
+    "genome_length": 11029,
+    "gene_coords": {
+      "ancC": [
+        97,
+        465
+      ],
+      "C": [
+        97,
+        465
+      ],
+      "prM": [
+        466,
+        966
+      ],
+      "pr": [
+        467,
+        498
+      ],
+      "M": [
+        499,
+        966
+      ],
+      "Env": [
+        967,
+        2469
+      ],
+      "NS1": [
+        2470,
+        3525
+      ],
+      "NS1'": [
+        97,
+        3671
+      ],
+      "NS2a": [
+        3526,
+        4218
+      ],
+      "NS2b": [
+        4219,
+        4611
+      ],
+      "NS3": [
+        4612,
+        6468
+      ],
+      "NS4a": [
+        6469,
+        6915
+      ],
+      "2K": [
+        6916,
+        6981
+      ],
+      "NS4b": [
+        6982,
+        7680
+      ],
+      "NS5": [
+        7681,
+        10395
+      ]
+    },
+    "colors": {
+      "ancC": "#313695",
+      "C": "#4575b4",
+      "prM": "#74add1",
+      "pr": "#6ba3d0",
+      "M": "#74add1",
+      "Env": "#abd9e9",
+      "NS1": "#fdae61",
+      "NS1'": "transparent",
+      "NS2a": "#f46d43",
+      "NS2b": "#d73027",
+      "NS3": "#a50026",
+      "NS4a": "#762a83",
+      "2K": "#e6f5d0",
+      "NS4b": "#9970ab",
+      "NS5": "#c2a5cf"
+    },
+    "structural_genes": [
+      "ancC",
+      "C",
+      "prM",
+      "pr",
+      "M",
+      "Env"
+    ],
+    "nonstructural_genes": [
+      "NS1",
+      "NS1'",
+      "NS2a",
+      "NS2b",
+      "NS3",
+      "NS4a",
+      "2K",
+      "NS4b",
+      "NS5"
+    ]
+  },
+  "KU955591.1": {
+    "colors": {
+      "anchored_capsid_protein_ancC": "#313695",
+      "capsid_protein_C": "#4575b4",
+      "membrane_glycoprotein_precursor_prM": "#74add1",
+      "protein_pr": "#20b2aa",
+      "membrane_glycoprotein_M": "#74add1",
+      "envelope_protein_E": "#abd9e9",
+      "nonstructural_protein_NS1": "#fdae61",
+      "nonstructural_protein_NS2A": "#f46d43",
+      "nonstructural_protein_NS2B": "#d73027",
+      "nonstructural_protein_NS3": "#a50026",
+      "nonstructural_protein_NS4A": "#762a83",
+      "protein_2K": "#e6f5d0",
+      "nonstructural_protein_NS4B": "#9970ab",
+      "RNA-dependent_RNA_polymerase_NS5": "#c2a5cf"
+    },
+    "family": "flavivirus",
+    "gene_coords": {
+      "RNA-dependent_RNA_polymerase_NS5": [
+        7667,
+        10375
+      ],
+      "anchored_capsid_protein_ancC": [
+        107,
+        472
+      ],
+      "capsid_protein_C": [
+        107,
+        418
+      ],
+      "envelope_protein_E": [
+        977,
+        2488
+      ],
+      "membrane_glycoprotein_M": [
+        752,
+        976
+      ],
+      "membrane_glycoprotein_precursor_prM": [
+        473,
+        976
+      ],
+      "nonstructural_protein_NS1": [
+        2489,
+        3544
+      ],
+      "nonstructural_protein_NS2A": [
+        3545,
+        4222
+      ],
+      "nonstructural_protein_NS2B": [
+        4223,
+        4612
+      ],
+      "nonstructural_protein_NS3": [
+        4613,
+        6463
+      ],
+      "nonstructural_protein_NS4A": [
+        6464,
+        6844
+      ],
+      "nonstructural_protein_NS4B": [
+        6914,
+        7666
+      ],
+      "protein_2K": [
+        6845,
+        6913
+      ],
+      "protein_pr": [
+        473,
+        751
+      ]
+    },
+    "genome_length": 0,
+    "name": "KU955591.1 (annotated by BLAST)",
+    "nonstructural_genes": [
+      "nonstructural_protein_NS1",
+      "nonstructural_protein_NS2A",
+      "nonstructural_protein_NS2B",
+      "nonstructural_protein_NS3",
+      "nonstructural_protein_NS4A",
+      "protein_2K",
+      "nonstructural_protein_NS4B",
+      "RNA-dependent_RNA_polymerase_NS5"
+    ],
+    "structural_genes": [
+      "anchored_capsid_protein_ancC",
+      "capsid_protein_C",
+      "membrane_glycoprotein_precursor_prM",
+      "protein_pr",
+      "membrane_glycoprotein_M",
+      "envelope_protein_E"
+    ]
+  },
+  "NC_075022.1": {
+    "name": "Venezuelan equine encephalitis virus",
+    "family": "alphavirus",
+    "genome_length": 11522,
+    "gene_coords": {
+      "nsP1": [
+        84,
+        1685
+      ],
+      "nsP2": [
+        1686,
+        4226
+      ],
+      "nsP3": [
+        4227,
+        5945
+      ],
+      "nsP4": [
+        5946,
+        7664
+      ],
+      "C": [
+        7667,
+        7900
+      ],
+      "E3": [
+        7901,
+        8059
+      ],
+      "E2": [
+        8060,
+        9394
+      ],
+      "E1": [
+        9395,
+        11023
+      ]
+    },
+    "colors": {
+      "nsP1": "#fdae61",
+      "nsP2": "#f46d43",
+      "nsP3": "#d73027",
+      "nsP4": "#a50026",
+      "C": "#4575b4",
+      "E3": "#5ba5c9",
+      "E2": "#7fb3d3",
+      "E1": "#abd9e9"
+    },
+    "structural_genes": [
+      "C",
+      "E3",
+      "E2",
+      "E1"
+    ],
+    "nonstructural_genes": [
+      "nsP1",
+      "nsP2",
+      "nsP3",
+      "nsP4"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "NC_075022.1": {
+    "name": "Venezuelan equine encephalitis virus",
+    "family": "alphavirus",
+    "genome_length": 11447,
+    "gene_coords": {
+      "NS": [
+        45,
+        5684
+      ],
+      "26S mRNA": [
+        7562,
+        11329
+      ],
+      "E3": [
+        8387,
+        8563
+      ],
+      "E2": [
+        8564,
+        9832
+      ],
+      "E1": [
+        10001,
+        11326
+      ]
+    },
+    "colors": {},
+    "structural_genes": [],
+    "nonstructural_genes": [],
+    "auto_discovered": true
+  }
+}
