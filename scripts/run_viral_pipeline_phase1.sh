@@ -113,6 +113,16 @@ echo ""
 echo "======================================================================="
 echo "         VIRAL GENOMICS PIPELINE - PHASE 1: Initial Analysis"
 echo "======================================================================="
+n# Pre-flight database validation
+print_info "Validating virus databases before pipeline execution..."
+${PIPELINE_BASE}/scripts/validate_virus_databases.sh "$ACCESSION"
+if [ $? -ne 0 ]; then
+    print_error "Database validation failed. Setup required before proceeding."
+    print_info "Run: ./scripts/validate_virus_databases.sh $ACCESSION -a"
+    exit 1
+fi
+print_status "Database validation passed"
+
 print_status "Sample: $SAMPLE_NAME"
 print_status "Reference: $ACCESSION"
 print_status "Output directory: $RESULTS_DIR"
