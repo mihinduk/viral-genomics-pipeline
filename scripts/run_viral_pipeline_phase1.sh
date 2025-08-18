@@ -113,7 +113,7 @@ echo ""
 echo "======================================================================="
 echo "         VIRAL GENOMICS PIPELINE - PHASE 1: Initial Analysis"
 echo "======================================================================="
-n# Pre-flight database validation
+#  Pre-flight database validation
 print_info "Validating virus databases before pipeline execution..."
 ${PIPELINE_BASE}/scripts/validate_virus_databases.sh "$ACCESSION"
 if [ $? -ne 0 ]; then
@@ -133,14 +133,14 @@ print_status "Submitting parallel analysis jobs..."
 
 # Module 1: Reference-guided assembly and SNP calling
 print_info "Module 1: Submitting reference-guided assembly..."
-ASSEMBLY_JOB=$(sbatch --parsable ${PIPELINE_BASE}/viral_pipeline/analysis/submit_viral_pipeline.sh \\
+ASSEMBLY_JOB=$(sbatch --parsable ${PIPELINE_BASE}/viral_pipeline/analysis/submit_viral_pipeline.sh\
     "$READ1" "$READ2" "$ACCESSION" "$THREADS")
 print_status "Assembly job submitted: $ASSEMBLY_JOB"
 
 # Module 6: Diagnostic report (run in parallel)
 if [ $SKIP_DIAGNOSTIC -eq 0 ]; then
     print_info "Module 6: Submitting diagnostic analysis..."
-    DIAG_JOB=$(sbatch --parsable ${PIPELINE_BASE}/viral_pipeline/analysis/submit_viral_diagnostic.sh \\
+    DIAG_JOB=$(sbatch --parsable ${PIPELINE_BASE}/viral_pipeline/analysis/submit_viral_diagnostic.sh\
         "$READ1" "$READ2" "$ACCESSION" "diagnostic_${SAMPLE_NAME}" "$THREADS")
     print_status "Diagnostic job submitted: $DIAG_JOB"
 else
